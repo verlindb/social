@@ -20,8 +20,6 @@ import { takeUntil, finalize } from 'rxjs/operators';
 import { CompanyService } from '../../services/company.service';
 import { LegalEntity, CompanyInfo } from '../../models/legal-entity.model';
 import { AddLegalEntityModalComponent } from '../../components/add-legal-entity-modal/add-legal-entity-modal.component';
-import { EditLegalEntityModalComponent } from '../../components/edit-legal-entity-modal/edit-legal-entity-modal.component';
-import { DeleteConfirmationDialogComponent } from '../../components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   selector: 'app-company-structure',
@@ -29,22 +27,7 @@ import { DeleteConfirmationDialogComponent } from '../../components/delete-confi
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatButtonToggleModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatDividerModule,
-    MatDialogModule,
-    AddLegalEntityModalComponent,
-    EditLegalEntityModalComponent,
-    DeleteConfirmationDialogComponent
+    AddLegalEntityModalComponent
   ],
   template: `
     <div class="company-structure-container">
