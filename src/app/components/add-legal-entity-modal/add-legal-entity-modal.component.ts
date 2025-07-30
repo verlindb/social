@@ -3,9 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 
@@ -20,9 +24,13 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatStepperModule
+    MatTooltipModule
   ],
   template: `
     <div 
@@ -67,92 +75,80 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <div class="form-section">
                   <h3 class="section-title">Entity Details</h3>
                   
-                  <div class="custom-form-field">
-                    <label for="entity-name" class="field-label">Entity Name *</label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Entity Name</mat-label>
                     <input 
-                      id="entity-name"
-                      type="text"
+                      matInput 
                       formControlName="name" 
                       placeholder="Enter legal entity name"
-                      class="custom-input"
-                      [class.error]="basicInfoForm.get('name')?.invalid && basicInfoForm.get('name')?.touched">
-                    <div class="field-hint">Full legal name of the entity</div>
-                    <div *ngIf="basicInfoForm.get('name')?.hasError('required') && basicInfoForm.get('name')?.touched" class="field-error">
+                      aria-describedby="name-hint">
+                    <mat-hint id="name-hint">Full legal name of the entity</mat-hint>
+                    <mat-error *ngIf="basicInfoForm.get('name')?.hasError('required')">
                       Entity name is required
-                    </div>
-                    <div *ngIf="basicInfoForm.get('name')?.hasError('minlength') && basicInfoForm.get('name')?.touched" class="field-error">
+                    </mat-error>
+                    <mat-error *ngIf="basicInfoForm.get('name')?.hasError('minlength')">
                       Name must be at least 2 characters long
-                    </div>
-                  </div>
+                    </mat-error>
+                  </mat-form-field>
 
                   <div class="form-row">
-                    <div class="custom-form-field">
-                      <label for="entity-type" class="field-label">Entity Type *</label>
-                      <select 
-                        id="entity-type"
+                    <mat-form-field appearance="outline">
+                      <mat-label>Entity Type</mat-label>
+                      <mat-select 
                         formControlName="type" 
-                        class="custom-select"
-                        [class.error]="basicInfoForm.get('type')?.invalid && basicInfoForm.get('type')?.touched">
-                        <option value="">Select entity type</option>
-                        <option 
+                        aria-label="Select entity type">
+                        <mat-option 
                           *ngFor="let type of entityTypes" 
                           [value]="type.value">
                           {{ type.label }}
-                        </option>
-                      </select>
-                      <div *ngIf="basicInfoForm.get('type')?.hasError('required') && basicInfoForm.get('type')?.touched" class="field-error">
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="basicInfoForm.get('type')?.hasError('required')">
                         Entity type is required
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
 
-                    <div class="custom-form-field">
-                      <label for="registration-number" class="field-label">Registration Number *</label>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Registration Number</mat-label>
                       <input 
-                        id="registration-number"
-                        type="text"
+                        matInput 
                         formControlName="registrationNumber" 
-                        placeholder="Enter registration number"
-                        class="custom-input"
-                        [class.error]="basicInfoForm.get('registrationNumber')?.invalid && basicInfoForm.get('registrationNumber')?.touched">
-                      <div *ngIf="basicInfoForm.get('registrationNumber')?.hasError('required') && basicInfoForm.get('registrationNumber')?.touched" class="field-error">
+                        placeholder="Enter registration number">
+                      <mat-error *ngIf="basicInfoForm.get('registrationNumber')?.hasError('required')">
                         Registration number is required
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
                   </div>
 
                   <div class="form-row">
-                    <div class="custom-form-field">
-                      <label for="employee-count" class="field-label">Employee Count *</label>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Employee Count</mat-label>
                       <input 
-                        id="employee-count"
+                        matInput 
                         type="number" 
                         formControlName="employeeCount" 
                         min="0"
-                        placeholder="Number of employees"
-                        class="custom-input"
-                        [class.error]="basicInfoForm.get('employeeCount')?.invalid && basicInfoForm.get('employeeCount')?.touched">
-                      <div *ngIf="basicInfoForm.get('employeeCount')?.hasError('required') && basicInfoForm.get('employeeCount')?.touched" class="field-error">
+                        placeholder="Number of employees">
+                      <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('required')">
                         Employee count is required
-                      </div>
-                      <div *ngIf="basicInfoForm.get('employeeCount')?.hasError('min') && basicInfoForm.get('employeeCount')?.touched" class="field-error">
+                      </mat-error>
+                      <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('min')">
                         Employee count must be 0 or greater
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
 
-                    <div class="custom-form-field">
-                      <label for="entity-status" class="field-label">Status *</label>
-                      <select 
-                        id="entity-status"
+                    <mat-form-field appearance="outline">
+                      <mat-label>Status</mat-label>
+                      <mat-select 
                         formControlName="status" 
-                        class="custom-select"
-                        [class.error]="basicInfoForm.get('status')?.invalid && basicInfoForm.get('status')?.touched">
-                        <option 
+                        aria-label="Select entity status">
+                        <mat-option 
                           *ngFor="let status of entityStatuses" 
                           [value]="status.value">
                           {{ status.label }}
-                        </option>
-                      </select>
-                    </div>
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
                   </div>
                 </div>
 
@@ -179,63 +175,51 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <div class="form-section">
                   <h3 class="section-title">Entity Address</h3>
                   
-                  <div class="custom-form-field full-width">
-                    <label for="street-address" class="field-label">Street Address *</label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Street Address</mat-label>
                     <input 
-                      id="street-address"
-                      type="text"
+                      matInput 
                       formControlName="street" 
-                      placeholder="Enter street address"
-                      class="custom-input"
-                      [class.error]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched">
-                    <div *ngIf="addressForm.get('street')?.hasError('required') && addressForm.get('street')?.touched" class="field-error">
+                      placeholder="Enter street address">
+                    <mat-error *ngIf="addressForm.get('street')?.hasError('required')">
                       Street address is required
-                    </div>
-                  </div>
+                    </mat-error>
+                  </mat-form-field>
 
                   <div class="form-row">
-                    <div class="custom-form-field">
-                      <label for="city" class="field-label">City *</label>
+                    <mat-form-field appearance="outline">
+                      <mat-label>City</mat-label>
                       <input 
-                        id="city"
-                        type="text"
+                        matInput 
                         formControlName="city" 
-                        placeholder="Enter city"
-                        class="custom-input"
-                        [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
-                      <div *ngIf="addressForm.get('city')?.hasError('required') && addressForm.get('city')?.touched" class="field-error">
+                        placeholder="Enter city">
+                      <mat-error *ngIf="addressForm.get('city')?.hasError('required')">
                         City is required
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
 
-                    <div class="custom-form-field">
-                      <label for="postal-code" class="field-label">Postal Code *</label>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Postal Code</mat-label>
                       <input 
-                        id="postal-code"
-                        type="text"
+                        matInput 
                         formControlName="postalCode" 
-                        placeholder="Enter postal code"
-                        class="custom-input"
-                        [class.error]="addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched">
-                      <div *ngIf="addressForm.get('postalCode')?.hasError('required') && addressForm.get('postalCode')?.touched" class="field-error">
+                        placeholder="Enter postal code">
+                      <mat-error *ngIf="addressForm.get('postalCode')?.hasError('required')">
                         Postal code is required
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
                   </div>
 
-                  <div class="custom-form-field full-width">
-                    <label for="country" class="field-label">Country *</label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Country</mat-label>
                     <input 
-                      id="country"
-                      type="text"
+                      matInput 
                       formControlName="country" 
-                      placeholder="Enter country"
-                      class="custom-input"
-                      [class.error]="addressForm.get('country')?.invalid && addressForm.get('country')?.touched">
-                    <div *ngIf="addressForm.get('country')?.hasError('required') && addressForm.get('country')?.touched" class="field-error">
+                      placeholder="Enter country">
+                    <mat-error *ngIf="addressForm.get('country')?.hasError('required')">
                       Country is required
-                    </div>
-                  </div>
+                    </mat-error>
+                  </mat-form-field>
                 </div>
 
                 <div class="step-actions">
@@ -269,65 +253,55 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                   <h3 class="section-title">Contact Person</h3>
                   
                   <div class="form-row">
-                    <div class="custom-form-field">
-                      <label for="contact-name" class="field-label">Full Name *</label>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Full Name</mat-label>
                       <input 
-                        id="contact-name"
-                        type="text"
+                        matInput 
                         formControlName="name" 
-                        placeholder="Enter contact person name"
-                        class="custom-input"
-                        [class.error]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
-                      <div *ngIf="contactForm.get('name')?.hasError('required') && contactForm.get('name')?.touched" class="field-error">
+                        placeholder="Enter contact person name">
+                      <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
                         Contact name is required
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
 
-                    <div class="custom-form-field">
-                      <label for="contact-position" class="field-label">Position *</label>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Position</mat-label>
                       <input 
-                        id="contact-position"
-                        type="text"
+                        matInput 
                         formControlName="position" 
-                        placeholder="Enter position/title"
-                        class="custom-input"
-                        [class.error]="contactForm.get('position')?.invalid && contactForm.get('position')?.touched">
-                      <div *ngIf="contactForm.get('position')?.hasError('required') && contactForm.get('position')?.touched" class="field-error">
+                        placeholder="Enter position/title">
+                      <mat-error *ngIf="contactForm.get('position')?.hasError('required')">
                         Position is required
-                      </div>
-                    </div>
+                      </mat-error>
+                    </mat-form-field>
                   </div>
 
-                  <div class="custom-form-field full-width">
-                    <label for="contact-email" class="field-label">Email Address *</label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Email Address</mat-label>
                     <input 
-                      id="contact-email"
+                      matInput 
                       type="email" 
                       formControlName="email" 
-                      placeholder="Enter email address"
-                      class="custom-input"
-                      [class.error]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
-                    <div *ngIf="contactForm.get('email')?.hasError('required') && contactForm.get('email')?.touched" class="field-error">
+                      placeholder="Enter email address">
+                    <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
                       Email is required
-                    </div>
-                    <div *ngIf="contactForm.get('email')?.hasError('email') && contactForm.get('email')?.touched" class="field-error">
+                    </mat-error>
+                    <mat-error *ngIf="contactForm.get('email')?.hasError('email')">
                       Please enter a valid email address
-                    </div>
-                  </div>
+                    </mat-error>
+                  </mat-form-field>
 
-                  <div class="custom-form-field full-width">
-                    <label for="contact-phone" class="field-label">Phone Number *</label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Phone Number</mat-label>
                     <input 
-                      id="contact-phone"
+                      matInput 
                       type="tel" 
                       formControlName="phone" 
-                      placeholder="Enter phone number"
-                      class="custom-input"
-                      [class.error]="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
-                    <div *ngIf="contactForm.get('phone')?.hasError('required') && contactForm.get('phone')?.touched" class="field-error">
+                      placeholder="Enter phone number">
+                    <mat-error *ngIf="contactForm.get('phone')?.hasError('required')">
                       Phone number is required
-                    </div>
-                  </div>
+                    </mat-error>
+                  </mat-form-field>
                 </div>
 
                 <div class="step-actions">
@@ -450,87 +424,6 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       gap: 8px;
     }
 
-    /* Custom Form Field Styling */
-    .custom-form-field {
-      margin-bottom: 20px;
-      position: relative;
-    }
-
-    .field-label {
-      display: block;
-      font-size: 14px;
-      font-weight: 500;
-      color: #374151;
-      margin-bottom: 6px;
-      cursor: pointer;
-    }
-
-    .custom-input,
-    .custom-select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 16px;
-      font-family: 'Roboto', sans-serif;
-      background-color: white;
-      color: #1f2937;
-      transition: all 0.2s ease;
-      box-sizing: border-box;
-      min-height: 48px;
-      line-height: 1.5;
-    }
-
-    .custom-input:focus,
-    .custom-select:focus {
-      outline: none;
-      border-color: #9E7FFF;
-      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
-    }
-
-    .custom-input:hover,
-    .custom-select:hover {
-      border-color: #9ca3af;
-    }
-
-    .custom-input.error,
-    .custom-select.error {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-
-    .custom-input::placeholder {
-      color: #9ca3af;
-      opacity: 1;
-    }
-
-    .custom-select {
-      cursor: pointer;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 12px center;
-      background-repeat: no-repeat;
-      background-size: 16px;
-      padding-right: 40px;
-      appearance: none;
-    }
-
-    .custom-select:focus {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239E7FFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-    }
-
-    .field-hint {
-      font-size: 12px;
-      color: #6b7280;
-      margin-top: 4px;
-    }
-
-    .field-error {
-      font-size: 12px;
-      color: #ef4444;
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -539,7 +432,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     }
 
     .full-width {
-      grid-column: 1 / -1;
+      width: 100%;
+      margin-bottom: 16px;
     }
 
     .step-actions {
@@ -589,6 +483,22 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
 
     ::ng-deep .mat-step-label {
       font-weight: 500;
+    }
+
+    /* Material Form Field Overrides for Modal */
+    ::ng-deep .mat-mdc-form-field {
+      width: 100% !important;
+      margin-bottom: 16px !important;
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: white !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+      border-color: #9E7FFF !important;
     }
 
     /* Responsive Design */
@@ -653,31 +563,24 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     }
 
     /* Accessibility improvements */
-    .custom-input:focus,
-    .custom-select:focus {
+    ::ng-deep .mat-mdc-input-element:focus {
       outline: 2px solid transparent;
       outline-offset: 2px;
     }
 
     @media (prefers-reduced-motion: reduce) {
       .modal-overlay,
-      .modal-container,
-      .custom-input,
-      .custom-select {
+      .modal-container {
         transition: none;
       }
     }
 
     /* High contrast mode support */
     @media (prefers-contrast: high) {
-      .custom-input,
-      .custom-select {
-        border-width: 3px;
-      }
-      
-      .custom-input:focus,
-      .custom-select:focus {
-        border-width: 3px;
+      ::ng-deep .mdc-notched-outline__leading,
+      ::ng-deep .mdc-notched-outline__notch,
+      ::ng-deep .mdc-notched-outline__trailing {
+        border-width: 3px !important;
       }
     }
   `]
