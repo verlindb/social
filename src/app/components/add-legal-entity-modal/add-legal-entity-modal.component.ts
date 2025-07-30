@@ -30,7 +30,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     MatIconModule,
     MatProgressSpinnerModule,
     MatStepperModule
-    MatTooltipModule
+    MatTooltipModule,
   ],
   template: `
     <div 
