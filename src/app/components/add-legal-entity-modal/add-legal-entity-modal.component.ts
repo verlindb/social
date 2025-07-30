@@ -78,8 +78,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
           <form [formGroup]="entityForm" (ngSubmit)="onSubmit()" class="entity-form">
             
             <!-- Step 1: Basic Information -->
-            <div class="step-content" [class.active-step]="currentStep === 1">
-              <div class="form-section">
+            <div class="step-content step-1" [class.active-step]="currentStep === 1">
+              <div class="form-section" *ngIf="currentStep === 1">
                 <h3 class="section-title">
                   <mat-icon>business</mat-icon>
                   Basic Information
@@ -163,7 +163,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 </div>
               </div>
 
-              <div class="step-actions">
+              <div class="step-actions" *ngIf="currentStep === 1">
                 <div></div> <!-- Empty div for spacing -->
                 <button 
                   type="button"
@@ -179,8 +179,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 2: Address Information -->
-            <div class="step-content" [class.active-step]="currentStep === 2">
-              <div class="form-section">
+            <div class="step-content step-2" [class.active-step]="currentStep === 2">
+              <div class="form-section" *ngIf="currentStep === 2">
                 <h3 class="section-title">
                   <mat-icon>location_on</mat-icon>
                   Address Information
@@ -245,7 +245,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 </div>
               </div>
 
-              <div class="step-actions">
+              <div class="step-actions" *ngIf="currentStep === 2">
                 <button 
                   type="button"
                   mat-button 
@@ -268,8 +268,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 3: Contact Information -->
-            <div class="step-content" [class.active-step]="currentStep === 3">
-              <div class="form-section">
+            <div class="step-content step-3" [class.active-step]="currentStep === 3">
+              <div class="form-section" *ngIf="currentStep === 3">
                 <h3 class="section-title">
                   <mat-icon>person</mat-icon>
                   Contact Person
@@ -335,7 +335,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 </div>
               </div>
 
-              <div class="step-actions">
+              <div class="step-actions" *ngIf="currentStep === 3">
                 <button 
                   type="button"
                   mat-button 
@@ -515,32 +515,31 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
 
     /* Completely hide inactive steps */
     .step-content:not(.active-step) {
-      display: none !important;
-      visibility: hidden !important;
-      position: absolute !important;
-      top: -9999px !important;
-      left: -9999px !important;
-      pointer-events: none !important;
-      z-index: -1000 !important;
-      opacity: 0 !important;
-      width: 0 !important;
-      height: 0 !important;
-      overflow: hidden !important;
+      display: none;
     }
 
     /* Ensure active step is fully visible and interactive */
     .step-content.active-step {
-      display: block !important;
-      visibility: visible !important;
-      position: relative !important;
-      top: auto !important;
-      left: auto !important;
-      pointer-events: auto !important;
-      z-index: 10 !important;
-      opacity: 1 !important;
-      width: 100% !important;
-      height: auto !important;
-      overflow: visible !important;
+      display: block;
+    }
+
+    /* Ensure each step container is completely isolated */
+    .step-1, .step-2, .step-3 {
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-1:not(.active-step),
+    .step-2:not(.active-step),
+    .step-3:not(.active-step) {
+      position: absolute;
+      top: -10000px;
+      left: -10000px;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: -1000;
     }
 
     .form-section {
