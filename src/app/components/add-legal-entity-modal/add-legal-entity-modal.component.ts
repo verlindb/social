@@ -29,7 +29,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     MatSelectModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatStepperModule
+    MatStepperModule,
     MatTooltipModule,
   ],
   template: `
