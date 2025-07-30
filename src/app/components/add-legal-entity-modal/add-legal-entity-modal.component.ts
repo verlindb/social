@@ -70,8 +70,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
           <form [formGroup]="entityForm" (ngSubmit)="onSubmit()" class="entity-form">
             
             <!-- Step 1: Basic Information -->
-            <div class="step-content step-1" [class.active-step]="currentStep === 1">
-              <div class="form-section" *ngIf="currentStep === 1">
+            <div *ngIf="currentStep === 1" class="step-content">
+              <div class="form-section">
                 <h3 class="section-title">
                   <span class="section-icon">🏢</span>
                   Basic Information
@@ -83,7 +83,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                     id="entity-name"
                     type="text" 
                     formControlName="name" 
-                    class="form-input"
+                    class="pure-input"
                     placeholder="Enter legal entity name"
                     autocomplete="off">
                   <div *ngIf="entityForm.get('name')?.invalid && entityForm.get('name')?.touched" class="error-message">
@@ -95,15 +95,18 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <div class="form-row">
                   <div class="form-group">
                     <label for="entity-type" class="form-label">Entity Type *</label>
-                    <select 
-                      id="entity-type"
-                      formControlName="type" 
-                      class="form-select">
-                      <option value="">Select entity type</option>
-                      <option *ngFor="let type of entityTypes" [value]="type.value">
-                        {{ type.label }}
-                      </option>
-                    </select>
+                    <div class="pure-select-wrapper">
+                      <select 
+                        id="entity-type"
+                        formControlName="type" 
+                        class="pure-select">
+                        <option value="">Select entity type</option>
+                        <option *ngFor="let type of entityTypes" [value]="type.value">
+                          {{ type.label }}
+                        </option>
+                      </select>
+                      <span class="select-arrow">▼</span>
+                    </div>
                     <div *ngIf="entityForm.get('type')?.invalid && entityForm.get('type')?.touched" class="error-message">
                       Entity type is required
                     </div>
@@ -115,7 +118,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       id="registration-number"
                       type="text" 
                       formControlName="registrationNumber" 
-                      class="form-input"
+                      class="pure-input"
                       placeholder="Enter registration number"
                       autocomplete="off">
                     <div *ngIf="entityForm.get('registrationNumber')?.invalid && entityForm.get('registrationNumber')?.touched" class="error-message">
@@ -131,7 +134,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       id="employee-count"
                       type="number" 
                       formControlName="employeeCount" 
-                      class="form-input"
+                      class="pure-input"
                       placeholder="Number of employees"
                       min="0"
                       autocomplete="off">
@@ -143,20 +146,23 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
 
                   <div class="form-group">
                     <label for="entity-status" class="form-label">Status</label>
-                    <select 
-                      id="entity-status"
-                      formControlName="status" 
-                      class="form-select">
-                      <option *ngFor="let status of entityStatuses" [value]="status.value">
-                        {{ status.label }}
-                      </option>
-                    </select>
+                    <div class="pure-select-wrapper">
+                      <select 
+                        id="entity-status"
+                        formControlName="status" 
+                        class="pure-select">
+                        <option *ngFor="let status of entityStatuses" [value]="status.value">
+                          {{ status.label }}
+                        </option>
+                      </select>
+                      <span class="select-arrow">▼</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="step-actions" *ngIf="currentStep === 1">
-                <div></div> <!-- Empty div for spacing -->
+              <div class="step-actions">
+                <div></div>
                 <button 
                   type="button"
                   (click)="nextStep()"
@@ -169,8 +175,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 2: Address Information -->
-            <div class="step-content step-2" [class.active-step]="currentStep === 2">
-              <div class="form-section" *ngIf="currentStep === 2">
+            <div *ngIf="currentStep === 2" class="step-content">
+              <div class="form-section">
                 <h3 class="section-title">
                   <span class="section-icon">📍</span>
                   Address Information
@@ -182,7 +188,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                     id="street-address"
                     type="text" 
                     formControlName="street" 
-                    class="form-input"
+                    class="pure-input"
                     placeholder="Enter street address"
                     autocomplete="off">
                   <div *ngIf="entityForm.get('street')?.invalid && entityForm.get('street')?.touched" class="error-message">
@@ -197,7 +203,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       id="city"
                       type="text" 
                       formControlName="city" 
-                      class="form-input"
+                      class="pure-input"
                       placeholder="Enter city"
                       autocomplete="off">
                     <div *ngIf="entityForm.get('city')?.invalid && entityForm.get('city')?.touched" class="error-message">
@@ -211,7 +217,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       id="postal-code"
                       type="text" 
                       formControlName="postalCode" 
-                      class="form-input"
+                      class="pure-input"
                       placeholder="Enter postal code"
                       autocomplete="off">
                     <div *ngIf="entityForm.get('postalCode')?.invalid && entityForm.get('postalCode')?.touched" class="error-message">
@@ -226,7 +232,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                     id="country"
                     type="text" 
                     formControlName="country" 
-                    class="form-input"
+                    class="pure-input"
                     placeholder="Enter country"
                     autocomplete="off">
                   <div *ngIf="entityForm.get('country')?.invalid && entityForm.get('country')?.touched" class="error-message">
@@ -235,7 +241,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 </div>
               </div>
 
-              <div class="step-actions" *ngIf="currentStep === 2">
+              <div class="step-actions">
                 <button 
                   type="button"
                   (click)="previousStep()"
@@ -255,8 +261,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 3: Contact Information -->
-            <div class="step-content step-3" [class.active-step]="currentStep === 3">
-              <div class="form-section" *ngIf="currentStep === 3">
+            <div *ngIf="currentStep === 3" class="step-content">
+              <div class="form-section">
                 <h3 class="section-title">
                   <span class="section-icon">👤</span>
                   Contact Person
@@ -269,7 +275,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       id="contact-name"
                       type="text" 
                       formControlName="contactName" 
-                      class="form-input"
+                      class="pure-input"
                       placeholder="Enter contact person name"
                       autocomplete="off">
                     <div *ngIf="entityForm.get('contactName')?.invalid && entityForm.get('contactName')?.touched" class="error-message">
@@ -283,7 +289,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       id="contact-position"
                       type="text" 
                       formControlName="contactPosition" 
-                      class="form-input"
+                      class="pure-input"
                       placeholder="Enter position/title"
                       autocomplete="off">
                     <div *ngIf="entityForm.get('contactPosition')?.invalid && entityForm.get('contactPosition')?.touched" class="error-message">
@@ -298,7 +304,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                     id="contact-email"
                     type="email" 
                     formControlName="contactEmail" 
-                    class="form-input"
+                    class="pure-input"
                     placeholder="Enter email address"
                     autocomplete="off">
                   <div *ngIf="entityForm.get('contactEmail')?.invalid && entityForm.get('contactEmail')?.touched" class="error-message">
@@ -313,7 +319,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                     id="contact-phone"
                     type="tel" 
                     formControlName="contactPhone" 
-                    class="form-input"
+                    class="pure-input"
                     placeholder="Enter phone number"
                     autocomplete="off">
                   <div *ngIf="entityForm.get('contactPhone')?.invalid && entityForm.get('contactPhone')?.touched" class="error-message">
@@ -322,7 +328,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 </div>
               </div>
 
-              <div class="step-actions" *ngIf="currentStep === 3">
+              <div class="step-actions">
                 <button 
                   type="button"
                   (click)="previousStep()"
@@ -346,6 +352,17 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     </div>
   `,
   styles: [`
+    /* Reset all Material styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Override any global Material styles */
+    .modal-overlay,
+    .modal-overlay * {
+      font-family: 'Roboto', sans-serif !important;
+    }
+
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -356,7 +373,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 10000;
       opacity: 0;
       visibility: hidden;
       transition: all 0.3s ease;
@@ -378,6 +395,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       transform: scale(0.9) translateY(20px);
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 10001;
     }
 
     .modal-overlay.open .modal-container {
@@ -501,45 +520,13 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     /* Form Styles */
     .entity-form {
       padding: 32px;
+      position: relative;
+      z-index: 1;
     }
 
     .step-content {
-      min-height: 400px;
       position: relative;
       z-index: 1;
-      pointer-events: auto;
-      width: 100%;
-      height: auto;
-      overflow: hidden;
-    }
-
-    /* Completely hide inactive steps */
-    .step-content:not(.active-step) {
-      display: none;
-    }
-
-    /* Ensure active step is fully visible and interactive */
-    .step-content.active-step {
-      display: block;
-    }
-
-    /* Ensure each step container is completely isolated */
-    .step-1, .step-2, .step-3 {
-      position: relative;
-      z-index: 1;
-    }
-
-    .step-1:not(.active-step),
-    .step-2:not(.active-step),
-    .step-3:not(.active-step) {
-      position: absolute;
-      top: -10000px;
-      left: -10000px;
-      width: 0;
-      height: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: -1000;
     }
 
     .form-section {
@@ -566,7 +553,6 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       margin-bottom: 20px;
       position: relative;
       z-index: 2;
-      pointer-events: auto;
     }
 
     .form-row {
@@ -584,8 +570,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       cursor: pointer;
     }
 
-    .form-input,
-    .form-select {
+    /* Pure HTML Input Styles - NO MATERIAL */
+    .pure-input {
       width: 100%;
       padding: 12px 16px;
       border: 2px solid #d1d5db;
@@ -598,44 +584,66 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       box-sizing: border-box;
       outline: none;
       position: relative;
-      z-index: 3;
-      pointer-events: auto;
-      cursor: text;
-      position: relative;
+      z-index: 10;
     }
 
-    .form-select {
-      cursor: pointer;
-    }
-
-    .form-input:focus,
-    .form-select:focus {
+    .pure-input:focus {
       border-color: #9E7FFF;
       box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
-      z-index: 4;
     }
 
-    .form-input:hover,
-    .form-select:hover {
+    .pure-input:hover {
       border-color: #9ca3af;
     }
 
-    .form-input::placeholder {
+    .pure-input::placeholder {
       color: #9ca3af;
     }
 
-    .form-select {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 12px center;
-      background-repeat: no-repeat;
-      background-size: 16px;
-      padding-right: 40px;
+    /* Pure HTML Select Styles - NO MATERIAL */
+    .pure-select-wrapper {
+      position: relative;
+      z-index: 10;
+    }
+
+    .pure-select {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background-color: white;
+      color: #1f2937;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      outline: none;
       cursor: pointer;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
       position: relative;
-      z-index: 3;
+      z-index: 10;
+    }
+
+    .pure-select:focus {
+      border-color: #9E7FFF;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
+    }
+
+    .pure-select:hover {
+      border-color: #9ca3af;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      pointer-events: none;
+      font-size: 12px;
+      z-index: 11;
     }
 
     .error-message {
@@ -643,9 +651,6 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       font-size: 12px;
       margin-top: 4px;
       font-weight: 500;
-      position: relative;
-      z-index: 2;
-      pointer-events: none;
     }
 
     .step-actions {
@@ -656,9 +661,6 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       border-top: 1px solid #e5e7eb;
       margin-top: 32px;
       gap: 16px;
-      position: relative;
-      z-index: 2;
-      pointer-events: auto;
     }
 
     /* Button Styles */
@@ -675,6 +677,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       gap: 8px;
       text-decoration: none;
       outline: none;
+      position: relative;
+      z-index: 10;
     }
 
     .btn:disabled {
@@ -722,57 +726,19 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       100% { transform: rotate(360deg); }
     }
 
-    .back-button {
-      pointer-events: auto;
-      z-index: 3;
-    }
-
-    .next-button,
-    .submit-button {
-      pointer-events: auto;
-      z-index: 3;
-    }
-
-    /* Ensure no element interference */
-    .stepper-header {
-      position: relative;
-      z-index: 1;
-      pointer-events: auto;
-    }
-
-    .stepper-header * {
-      pointer-events: auto;
-    }
-
-    /* Prevent any hidden elements from interfering */
-    .entity-form > div:not(.step-content[style*="block"]) {
+    /* Ensure no Material interference */
+    .modal-overlay .cdk-overlay-container,
+    .modal-overlay .mat-select-panel,
+    .modal-overlay .mat-option,
+    .modal-overlay .mat-form-field,
+    .modal-overlay [class*="mat-"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
       pointer-events: none !important;
+      z-index: -1000 !important;
     }
 
-    /* Force proper layering */
-    .modal-container * {
-      position: relative;
-    }
-
-    /* Ensure form elements are always on top */
-    input, select, textarea, button {
-      position: relative !important;
-      z-index: 10 !important;
-      pointer-events: auto !important;
-    }
-
-    /* Fix any potential overlay issues */
-    .form-input:hover,
-    .form-select:hover {
-      z-index: 5;
-    }
-
-    /* Ensure labels don't interfere */
-    .form-label {
-      pointer-events: none;
-      position: relative;
-      z-index: 1;
-    }
     @media (max-width: 768px) {
       .modal-container {
         width: 95vw;
@@ -947,7 +913,6 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
 
   onSubmit(): void {
     if (this.entityForm.invalid || this.isSubmitting) {
-      // Mark all fields as touched to show validation errors
       Object.keys(this.entityForm.controls).forEach(key => {
         this.entityForm.get(key)?.markAsTouched();
       });
