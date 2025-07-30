@@ -483,6 +483,118 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       font-weight: 500;
     }
 
+    /* CRITICAL: Force form field visibility and remove any blocking elements */
+    .mat-mdc-form-field {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 10 !important;
+      margin-bottom: 16px !important;
+      min-height: 56px !important;
+      background: transparent !important;
+    }
+
+    .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: #ffffff !important;
+      border: 2px solid #d1d5db !important;
+      border-radius: 8px !important;
+      min-height: 56px !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    .mat-mdc-input-element,
+    input[matInput],
+    textarea[matInput] {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: transparent !important;
+      color: #1f2937 !important;
+      font-size: 16px !important;
+      padding: 16px 14px !important;
+      border: none !important;
+      outline: none !important;
+      box-sizing: border-box !important;
+      min-height: 24px !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    .mat-mdc-select {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    .mat-mdc-select-trigger {
+      width: 100% !important;
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: transparent !important;
+      color: #1f2937 !important;
+      font-size: 16px !important;
+      padding: 16px 14px !important;
+      min-height: 24px !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Remove any overlay or blocking elements */
+    .mat-mdc-form-field::before,
+    .mat-mdc-form-field::after {
+      display: none !important;
+    }
+
+    /* Ensure labels are visible */
+    .mat-mdc-form-field-label {
+      color: #6b7280 !important;
+      font-size: 16px !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Focus states */
+    .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+      border-color: #9E7FFF !important;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1) !important;
+    }
+
+    /* Remove Material outline that might be blocking */
+    .mat-mdc-form-field-appearance-outline .mdc-notched-outline {
+      display: none !important;
+    }
+
+    .mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+    .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+    .mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing {
+      display: none !important;
+    }
+
+    /* Ensure step content is not blocking form fields */
+    .step-form {
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    .form-section {
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
     @media (max-width: 768px) {
       .modal-container {
         width: 95vw;
