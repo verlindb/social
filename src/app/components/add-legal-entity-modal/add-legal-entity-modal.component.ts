@@ -494,6 +494,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       margin-bottom: 16px !important;
       min-height: 56px !important;
       background: transparent !important;
+      pointer-events: auto !important;
     }
 
     .mat-mdc-form-field .mat-mdc-text-field-wrapper {
@@ -507,6 +508,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       min-height: 56px !important;
       position: relative !important;
       z-index: 10 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
     }
 
     .mat-mdc-input-element,
@@ -526,8 +529,22 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       min-height: 24px !important;
       position: relative !important;
       z-index: 10 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
     }
 
+    /* Fix number input styling */
+    input[type="number"][matInput] {
+      -webkit-appearance: none !important;
+      -moz-appearance: textfield !important;
+      appearance: none !important;
+    }
+
+    input[type="number"][matInput]::-webkit-outer-spin-button,
+    input[type="number"][matInput]::-webkit-inner-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
     .mat-mdc-select {
       width: 100% !important;
       display: block !important;
@@ -535,6 +552,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       opacity: 1 !important;
       position: relative !important;
       z-index: 10 !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
     }
 
     .mat-mdc-select-trigger {
@@ -549,6 +568,50 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       min-height: 24px !important;
       position: relative !important;
       z-index: 10 !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+
+    /* Fix select arrow visibility */
+    .mat-mdc-select-arrow {
+      visibility: visible !important;
+      opacity: 1 !important;
+      color: #6b7280 !important;
+      pointer-events: none !important;
+    }
+
+    /* Ensure the entire form field is clickable */
+    .mat-mdc-form-field-flex {
+      width: 100% !important;
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Make the label clickable to focus input */
+    .mat-mdc-form-field-label {
+      color: #6b7280 !important;
+      font-size: 16px !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 10 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
+    }
+
+    /* Fix for select fields - make entire area clickable */
+    .mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
+      cursor: pointer !important;
+    }
+
+    .mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-form-field-flex {
+      cursor: pointer !important;
+    }
     }
 
     /* Remove any overlay or blocking elements */
@@ -557,15 +620,6 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       display: none !important;
     }
 
-    /* Ensure labels are visible */
-    .mat-mdc-form-field-label {
-      color: #6b7280 !important;
-      font-size: 16px !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
 
     /* Focus states */
     .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
@@ -573,6 +627,14 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1) !important;
     }
 
+    .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+      color: #9E7FFF !important;
+    }
+
+    /* Hover states */
+    .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+      border-color: #9ca3af !important;
+    }
     /* Remove Material outline that might be blocking */
     .mat-mdc-form-field-appearance-outline .mdc-notched-outline {
       display: none !important;
@@ -584,6 +646,27 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       display: none !important;
     }
 
+    /* Ensure form field infix is properly sized and clickable */
+    .mat-mdc-form-field-infix {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      position: relative !important;
+      z-index: 10 !important;
+      padding: 16px 14px !important;
+      border: none !important;
+      min-height: 24px !important;
+    }
+
+    /* Fix subscript wrapper */
+    .mat-mdc-form-field-subscript-wrapper {
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
     /* Ensure step content is not blocking form fields */
     .step-form {
       position: relative !important;
