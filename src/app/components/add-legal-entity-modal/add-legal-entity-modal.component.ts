@@ -678,6 +678,85 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       z-index: 1 !important;
     }
 
+    /* CRITICAL: Override any global styles that might be blocking inputs */
+    .mat-mdc-form-field * {
+      pointer-events: auto !important;
+    }
+
+    /* Force input elements to be editable */
+    input[matInput]:disabled,
+    textarea[matInput]:disabled,
+    .mat-mdc-select:disabled {
+      pointer-events: none !important;
+    }
+
+    input[matInput]:not(:disabled),
+    textarea[matInput]:not(:disabled) {
+      pointer-events: auto !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+    }
+
+    /* Ensure form controls are not readonly */
+    .mat-mdc-input-element:not([readonly]) {
+      background-color: white !important;
+      cursor: text !important;
+    }
+
+    /* Fix any potential overlay issues */
+    .modal-content * {
+      pointer-events: auto !important;
+    }
+
+    /* Ensure stepper content doesn't block inputs */
+    ::ng-deep .mat-step-content {
+      overflow: visible !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    ::ng-deep .mat-stepper-horizontal .mat-step-content {
+      overflow: visible !important;
+    }
+
+    /* Force Material form field wrapper to be interactive */
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      pointer-events: auto !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-infix {
+      pointer-events: auto !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Ensure input elements receive focus and input */
+    ::ng-deep input[matInput],
+    ::ng-deep textarea[matInput] {
+      pointer-events: auto !important;
+      user-select: text !important;
+      cursor: text !important;
+      position: relative !important;
+      z-index: 15 !important;
+    }
+
+    /* Fix select dropdown */
+    ::ng-deep .mat-mdc-select {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      position: relative !important;
+      z-index: 15 !important;
+    }
+
+    ::ng-deep .mat-mdc-select-trigger {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+
     @media (max-width: 768px) {
       .modal-container {
         width: 95vw;
