@@ -78,7 +78,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
           <form [formGroup]="entityForm" (ngSubmit)="onSubmit()" class="entity-form">
             
             <!-- Step 1: Basic Information -->
-            <div class="step-content" *ngIf="currentStep === 1">
+            <div class="step-content" [style.display]="currentStep === 1 ? 'block' : 'none'">
               <div class="form-section">
                 <h3 class="section-title">
                   <mat-icon>business</mat-icon>
@@ -179,7 +179,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 2: Address Information -->
-            <div class="step-content" *ngIf="currentStep === 2">
+            <div class="step-content" [style.display]="currentStep === 2 ? 'block' : 'none'">
               <div class="form-section">
                 <h3 class="section-title">
                   <mat-icon>location_on</mat-icon>
@@ -268,7 +268,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 3: Contact Information -->
-            <div class="step-content" *ngIf="currentStep === 3">
+            <div class="step-content" [style.display]="currentStep === 3 ? 'block' : 'none'">
               <div class="form-section">
                 <h3 class="section-title">
                   <mat-icon>person</mat-icon>
