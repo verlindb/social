@@ -440,12 +440,16 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       width: 100% !important;
       margin-bottom: 16px !important;
       display: block !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     /* Ensure Material form field components are visible */
     .form-field-wrapper ::ng-deep .mat-mdc-form-field {
       width: 100% !important;
       display: block !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     /* Modal-specific input styling to prevent conflicts */
@@ -456,37 +460,71 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       color: #171717 !important;
       font-size: 16px !important;
       box-sizing: border-box !important;
+      position: relative !important;
+      z-index: 2 !important;
+      border: none !important;
+      outline: none !important;
     }
 
     .modal-select {
       width: 100% !important;
       display: block !important;
+      position: relative !important;
+      z-index: 2 !important;
     }
 
     /* Ensure Material input is not blocked */
     .form-field-wrapper ::ng-deep .mat-mdc-text-field-wrapper {
       background-color: white !important;
+      position: relative !important;
+      z-index: 1 !important;
+      border: 1px solid #d1d5db !important;
+      border-radius: 4px !important;
+      min-height: 56px !important;
     }
 
     .form-field-wrapper ::ng-deep .mat-mdc-form-field-infix {
       min-height: 56px !important;
       padding: 16px 0 !important;
+      position: relative !important;
+      z-index: 2 !important;
     }
 
     .form-field-wrapper ::ng-deep input.mat-mdc-input-element,
     .form-field-wrapper ::ng-deep .mat-mdc-select {
       color: #171717 !important;
       caret-color: #9E7FFF !important;
+      background-color: transparent !important;
+      border: none !important;
+      outline: none !important;
+      width: 100% !important;
+      padding: 12px 16px !important;
+      font-size: 16px !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Ensure input elements are clickable and not blocked */
+    .form-field-wrapper ::ng-deep input.mat-mdc-input-element:focus,
+    .form-field-wrapper ::ng-deep .mat-mdc-select:focus {
+      outline: none !important;
+      box-shadow: none !important;
     }
 
     .form-field-wrapper ::ng-deep .mat-mdc-form-field-focus-overlay {
       background-color: transparent !important;
     }
 
+    /* Remove any blocking overlays */
+    .form-field-wrapper ::ng-deep .mdc-text-field__ripple {
+      display: none !important;
+    }
+
+    /* Ensure proper border styling */
     .form-field-wrapper ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
     .form-field-wrapper ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
     .form-field-wrapper ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
-      border-color: #e5e5e5 !important;
+      border-color: #d1d5db !important;
+      border-width: 1px !important;
     }
 
     .form-field-wrapper ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline__leading,
@@ -501,6 +539,63 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       border-color: #9E7FFF !important;
     }
 
+    /* Label positioning and styling */
+    .form-field-wrapper ::ng-deep .mat-mdc-form-field-label {
+      color: #6b7280 !important;
+      font-size: 16px !important;
+      position: absolute !important;
+      z-index: 3 !important;
+      pointer-events: none !important;
+    }
+
+    .form-field-wrapper ::ng-deep .mat-mdc-form-field-label.mdc-floating-label--float-above {
+      color: #9E7FFF !important;
+      font-size: 12px !important;
+      transform: translateY(-50%) scale(0.75) !important;
+    }
+
+    /* Ensure select dropdown is properly styled */
+    .form-field-wrapper ::ng-deep .mat-mdc-select-trigger {
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      min-height: 24px !important;
+      padding: 12px 16px !important;
+      cursor: pointer !important;
+    }
+
+    .form-field-wrapper ::ng-deep .mat-mdc-select-arrow-wrapper {
+      position: absolute !important;
+      right: 16px !important;
+      z-index: 4 !important;
+    }
+
+    /* Fix for textarea */
+    .form-field-wrapper ::ng-deep textarea.mat-mdc-input-element {
+      min-height: 80px !important;
+      resize: vertical !important;
+      padding: 12px 16px !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Ensure error and hint text are visible */
+    .form-field-wrapper ::ng-deep .mat-mdc-form-field-error,
+    .form-field-wrapper ::ng-deep .mat-mdc-form-field-hint {
+      font-size: 12px !important;
+      margin-top: 4px !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .form-field-wrapper ::ng-deep .mat-mdc-form-field-error {
+      color: #dc2626 !important;
+    }
+
+    .form-field-wrapper ::ng-deep .mat-mdc-form-field-hint {
+      color: #6b7280 !important;
+    }
+
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -508,9 +603,17 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       margin-bottom: 16px;
     }
 
+    /* Ensure form rows don't interfere with input fields */
+    .form-row .form-field-wrapper {
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
     .full-width {
       width: 100%;
       margin-bottom: 16px;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     .step-actions {
