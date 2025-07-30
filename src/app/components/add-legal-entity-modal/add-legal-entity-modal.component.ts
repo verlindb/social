@@ -10,11 +10,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 
 import { CompanyService } from '../../services/company.service';
 import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-entity.model';
+
+interface EditableField {
+  key: string;
+  label: string;
+  value: any;
+  type: 'text' | 'select' | 'number' | 'email' | 'tel';
+  options?: { value: any; label: string }[];
+  isEditing: boolean;
+  validators?: any[];
+}
 
 @Component({
   selector: 'app-add-legal-entity-modal',
@@ -31,6 +43,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     MatProgressSpinnerModule,
     MatStepperModule,
     MatTooltipModule,
+    MatCardModule,
+    MatChipsModule
   ],
   template: `
     <div 
@@ -59,273 +73,249 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
         </header>
 
         <div class="modal-content">
-          <mat-stepper 
-            #stepper 
-            [linear]="true" 
-            orientation="horizontal"
-            class="entity-stepper"
-            [attr.aria-label]="'Add legal entity form steps'">
+          <!-- Basic Information Section -->
+          <mat-card class="section-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>business</mat-icon>
+                Basic Information
+              </mat-card-title>
+              <mat-card-subtitle>Click on any field to edit</mat-card-subtitle>
+            </mat-card-header>
             
-            <!-- Step 1: Basic Information -->
-            <mat-step 
-              [stepControl]="basicInfoForm" 
-              label="Basic Information"
-              [attr.aria-label]="'Step 1: Basic Information'">
-              <form [formGroup]="basicInfoForm" class="step-form">
-                <div class="form-section">
-                  <h3 class="section-title">Entity Details</h3>
+            <mat-card-content>
+              <div class="inline-editor-grid">
+                <div 
+                  *ngFor="let field of basicInfoFields" 
+                  class="inline-editor-item"
+                  [class.editing]="field.isEditing">
                   
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Entity Name</mat-label>
-                    <input 
-                      matInput 
-                      formControlName="name" 
-                      placeholder="Enter legal entity name"
-                      aria-describedby="name-hint">
-                    <mat-hint id="name-hint">Full legal name of the entity</mat-hint>
-                    <mat-error *ngIf="basicInfoForm.get('name')?.hasError('required')">
-                      Entity name is required
-                    </mat-error>
-                    <mat-error *ngIf="basicInfoForm.get('name')?.hasError('minlength')">
-                      Name must be at least 2 characters long
-                    </mat-error>
-                  </mat-form-field>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Entity Type</mat-label>
-                      <mat-select 
-                        formControlName="type" 
-                        aria-label="Select entity type">
-                        <mat-option 
-                          *ngFor="let type of entityTypes" 
-                          [value]="type.value">
-                          {{ type.label }}
-                        </mat-option>
-                      </mat-select>
-                      <mat-error *ngIf="basicInfoForm.get('type')?.hasError('required')">
-                        Entity type is required
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Registration Number</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="registrationNumber" 
-                        placeholder="Enter registration number">
-                      <mat-error *ngIf="basicInfoForm.get('registrationNumber')?.hasError('required')">
-                        Registration number is required
-                      </mat-error>
-                    </mat-form-field>
+                  <div class="field-label">{{ field.label }}</div>
+                  
+                  <!-- Display Mode -->
+                  <div 
+                    *ngIf="!field.isEditing" 
+                    class="field-display"
+                    (click)="startEditing(field)"
+                    matTooltip="Click to edit"
+                    [attr.aria-label]="'Edit ' + field.label">
+                    
+                    <span class="field-value" [class.empty]="!field.value">
+                      {{ getDisplayValue(field) }}
+                    </span>
+                    <mat-icon class="edit-icon">edit</mat-icon>
                   </div>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Employee Count</mat-label>
+                  
+                  <!-- Edit Mode -->
+                  <div *ngIf="field.isEditing" class="field-editor">
+                    <!-- Text/Number/Email/Tel Input -->
+                    <mat-form-field 
+                      *ngIf="field.type !== 'select'" 
+                      appearance="outline" 
+                      class="inline-input">
                       <input 
                         matInput 
-                        type="number" 
-                        formControlName="employeeCount" 
-                        min="0"
-                        placeholder="Number of employees">
-                      <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('required')">
-                        Employee count is required
-                      </mat-error>
-                      <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('min')">
-                        Employee count must be 0 or greater
-                      </mat-error>
+                        [type]="field.type"
+                        [(ngModel)]="field.value"
+                        [placeholder]="'Enter ' + field.label.toLowerCase()"
+                        (keyup.enter)="saveField(field)"
+                        (keyup.escape)="cancelEdit(field)"
+                        #inputRef>
                     </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Status</mat-label>
+                    
+                    <!-- Select Input -->
+                    <mat-form-field 
+                      *ngIf="field.type === 'select'" 
+                      appearance="outline" 
+                      class="inline-input">
                       <mat-select 
-                        formControlName="status" 
-                        aria-label="Select entity status">
+                        [(ngModel)]="field.value"
+                        [placeholder]="'Select ' + field.label.toLowerCase()">
                         <mat-option 
-                          *ngFor="let status of entityStatuses" 
-                          [value]="status.value">
-                          {{ status.label }}
+                          *ngFor="let option of field.options" 
+                          [value]="option.value">
+                          {{ option.label }}
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
+                    
+                    <div class="field-actions">
+                      <button 
+                        mat-icon-button 
+                        color="primary"
+                        (click)="saveField(field)"
+                        matTooltip="Save"
+                        class="save-btn">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                      <button 
+                        mat-icon-button 
+                        (click)="cancelEdit(field)"
+                        matTooltip="Cancel"
+                        class="cancel-btn">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
                   </div>
                 </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
 
-                <div class="step-actions">
-                  <button 
-                    mat-raised-button 
-                    color="primary" 
-                    matStepperNext
-                    [disabled]="basicInfoForm.invalid"
-                    class="next-button">
-                    <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-                    Next: Address
-                  </button>
-                </div>
-              </form>
-            </mat-step>
-
-            <!-- Step 2: Address Information -->
-            <mat-step 
-              [stepControl]="addressForm" 
-              label="Address"
-              [attr.aria-label]="'Step 2: Address Information'">
-              <form [formGroup]="addressForm" class="step-form">
-                <div class="form-section">
-                  <h3 class="section-title">Entity Address</h3>
+          <!-- Address Information Section -->
+          <mat-card class="section-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>location_on</mat-icon>
+                Address Information
+              </mat-card-title>
+              <mat-card-subtitle>Click on any field to edit</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="inline-editor-grid">
+                <div 
+                  *ngFor="let field of addressFields" 
+                  class="inline-editor-item"
+                  [class.editing]="field.isEditing">
                   
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Street Address</mat-label>
-                    <input 
-                      matInput 
-                      formControlName="street" 
-                      placeholder="Enter street address">
-                    <mat-error *ngIf="addressForm.get('street')?.hasError('required')">
-                      Street address is required
-                    </mat-error>
-                  </mat-form-field>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>City</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="city" 
-                        placeholder="Enter city">
-                      <mat-error *ngIf="addressForm.get('city')?.hasError('required')">
-                        City is required
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Postal Code</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="postalCode" 
-                        placeholder="Enter postal code">
-                      <mat-error *ngIf="addressForm.get('postalCode')?.hasError('required')">
-                        Postal code is required
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Country</mat-label>
-                    <input 
-                      matInput 
-                      formControlName="country" 
-                      placeholder="Enter country">
-                    <mat-error *ngIf="addressForm.get('country')?.hasError('required')">
-                      Country is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div class="step-actions">
-                  <button 
-                    mat-button 
-                    matStepperPrevious
-                    class="back-button">
-                    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-                    Back
-                  </button>
-                  <button 
-                    mat-raised-button 
-                    color="primary" 
-                    matStepperNext
-                    [disabled]="addressForm.invalid"
-                    class="next-button">
-                    <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-                    Next: Contact
-                  </button>
-                </div>
-              </form>
-            </mat-step>
-
-            <!-- Step 3: Contact Information -->
-            <mat-step 
-              [stepControl]="contactForm" 
-              label="Contact Person"
-              [attr.aria-label]="'Step 3: Contact Person Information'">
-              <form [formGroup]="contactForm" class="step-form">
-                <div class="form-section">
-                  <h3 class="section-title">Contact Person</h3>
+                  <div class="field-label">{{ field.label }}</div>
                   
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Full Name</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="name" 
-                        placeholder="Enter contact person name">
-                      <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
-                        Contact name is required
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Position</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="position" 
-                        placeholder="Enter position/title">
-                      <mat-error *ngIf="contactForm.get('position')?.hasError('required')">
-                        Position is required
-                      </mat-error>
-                    </mat-form-field>
+                  <!-- Display Mode -->
+                  <div 
+                    *ngIf="!field.isEditing" 
+                    class="field-display"
+                    (click)="startEditing(field)"
+                    matTooltip="Click to edit"
+                    [attr.aria-label]="'Edit ' + field.label">
+                    
+                    <span class="field-value" [class.empty]="!field.value">
+                      {{ field.value || 'Click to add ' + field.label.toLowerCase() }}
+                    </span>
+                    <mat-icon class="edit-icon">edit</mat-icon>
                   </div>
-
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Email Address</mat-label>
-                    <input 
-                      matInput 
-                      type="email" 
-                      formControlName="email" 
-                      placeholder="Enter email address">
-                    <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
-                      Email is required
-                    </mat-error>
-                    <mat-error *ngIf="contactForm.get('email')?.hasError('email')">
-                      Please enter a valid email address
-                    </mat-error>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Phone Number</mat-label>
-                    <input 
-                      matInput 
-                      type="tel" 
-                      formControlName="phone" 
-                      placeholder="Enter phone number">
-                    <mat-error *ngIf="contactForm.get('phone')?.hasError('required')">
-                      Phone number is required
-                    </mat-error>
-                  </mat-form-field>
+                  
+                  <!-- Edit Mode -->
+                  <div *ngIf="field.isEditing" class="field-editor">
+                    <mat-form-field appearance="outline" class="inline-input">
+                      <input 
+                        matInput 
+                        [(ngModel)]="field.value"
+                        [placeholder]="'Enter ' + field.label.toLowerCase()"
+                        (keyup.enter)="saveField(field)"
+                        (keyup.escape)="cancelEdit(field)">
+                    </mat-form-field>
+                    
+                    <div class="field-actions">
+                      <button 
+                        mat-icon-button 
+                        color="primary"
+                        (click)="saveField(field)"
+                        matTooltip="Save"
+                        class="save-btn">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                      <button 
+                        mat-icon-button 
+                        (click)="cancelEdit(field)"
+                        matTooltip="Cancel"
+                        class="cancel-btn">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
 
-                <div class="step-actions">
-                  <button 
-                    mat-button 
-                    matStepperPrevious
-                    class="back-button">
-                    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-                    Back
-                  </button>
-                  <button 
-                    mat-raised-button 
-                    color="primary" 
-                    (click)="onSubmit()"
-                    [disabled]="!isFormValid() || isSubmitting"
-                    class="submit-button">
-                    <mat-icon *ngIf="!isSubmitting" aria-hidden="true">save</mat-icon>
-                    <mat-spinner *ngIf="isSubmitting" diameter="20" aria-hidden="true"></mat-spinner>
-                    {{ isSubmitting ? 'Adding Entity...' : 'Add Legal Entity' }}
-                  </button>
+          <!-- Contact Information Section -->
+          <mat-card class="section-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>person</mat-icon>
+                Contact Person
+              </mat-card-title>
+              <mat-card-subtitle>Click on any field to edit</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="inline-editor-grid">
+                <div 
+                  *ngFor="let field of contactFields" 
+                  class="inline-editor-item"
+                  [class.editing]="field.isEditing">
+                  
+                  <div class="field-label">{{ field.label }}</div>
+                  
+                  <!-- Display Mode -->
+                  <div 
+                    *ngIf="!field.isEditing" 
+                    class="field-display"
+                    (click)="startEditing(field)"
+                    matTooltip="Click to edit"
+                    [attr.aria-label]="'Edit ' + field.label">
+                    
+                    <span class="field-value" [class.empty]="!field.value">
+                      {{ field.value || 'Click to add ' + field.label.toLowerCase() }}
+                    </span>
+                    <mat-icon class="edit-icon">edit</mat-icon>
+                  </div>
+                  
+                  <!-- Edit Mode -->
+                  <div *ngIf="field.isEditing" class="field-editor">
+                    <mat-form-field appearance="outline" class="inline-input">
+                      <input 
+                        matInput 
+                        [type]="field.type"
+                        [(ngModel)]="field.value"
+                        [placeholder]="'Enter ' + field.label.toLowerCase()"
+                        (keyup.enter)="saveField(field)"
+                        (keyup.escape)="cancelEdit(field)">
+                    </mat-form-field>
+                    
+                    <div class="field-actions">
+                      <button 
+                        mat-icon-button 
+                        color="primary"
+                        (click)="saveField(field)"
+                        matTooltip="Save"
+                        class="save-btn">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                      <button 
+                        mat-icon-button 
+                        (click)="cancelEdit(field)"
+                        matTooltip="Cancel"
+                        class="cancel-btn">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </form>
-            </mat-step>
-          </mat-stepper>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button 
+              mat-button 
+              (click)="onClose()"
+              class="cancel-button">
+              Cancel
+            </button>
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="onSubmit()"
+              [disabled]="!isFormValid() || isSubmitting"
+              class="submit-button">
+              <mat-icon *ngIf="!isSubmitting" aria-hidden="true">save</mat-icon>
+              <mat-spinner *ngIf="isSubmitting" diameter="20" aria-hidden="true"></mat-spinner>
+              {{ isSubmitting ? 'Adding Entity...' : 'Add Legal Entity' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -357,7 +347,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       background: white;
       border-radius: 16px;
       width: 90vw;
-      max-width: 800px;
+      max-width: 900px;
       max-height: 90vh;
       overflow: hidden;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -391,114 +381,164 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       color: white;
     }
 
-    .close-button:focus {
-      outline: 2px solid white;
-      outline-offset: 2px;
-    }
-
     .modal-content {
-      padding: 0;
-      max-height: calc(90vh - 80px);
+      padding: 24px;
+      max-height: calc(90vh - 140px);
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    .entity-stepper {
-      background: transparent;
+    .section-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .step-form {
-      padding: 32px;
+    .section-card mat-card-header {
+      padding-bottom: 16px;
     }
 
-    .form-section {
-      margin-bottom: 32px;
-    }
-
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0 0 24px 0;
+    .section-card mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       color: #171717;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 1.25rem;
     }
 
-    .form-row {
+    .section-card mat-card-subtitle {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+
+    .inline-editor-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      margin-bottom: 0;
     }
 
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
+    .inline-editor-item {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 12px;
+      transition: all 0.2s ease;
+      background: #f9fafb;
     }
 
-    .step-actions {
+    .inline-editor-item:hover {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+    }
+
+    .inline-editor-item.editing {
+      background: white;
+      border-color: #9E7FFF;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
+    }
+
+    .field-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .field-display {
       display: flex;
+      align-items: center;
       justify-content: space-between;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      min-height: 40px;
+    }
+
+    .field-display:hover {
+      background: rgba(158, 127, 255, 0.1);
+    }
+
+    .field-value {
+      flex: 1;
+      font-size: 1rem;
+      color: #171717;
+    }
+
+    .field-value.empty {
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    .edit-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #6b7280;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .field-display:hover .edit-icon {
+      opacity: 1;
+    }
+
+    .field-editor {
+      display: flex;
       align-items: center;
-      padding-top: 24px;
-      border-top: 1px solid #e5e5e5;
+      gap: 8px;
+    }
+
+    .inline-input {
+      flex: 1;
+      margin-bottom: 0 !important;
+    }
+
+    .field-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .save-btn {
+      color: #10b981;
+    }
+
+    .cancel-btn {
+      color: #6b7280;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
       gap: 16px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
     }
 
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .next-button,
     .submit-button {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-left: auto;
-    }
-
-    .submit-button {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: white;
     }
 
-    /* Stepper customization */
-    ::ng-deep .mat-stepper-horizontal {
-      margin-top: 0;
+    /* Material Form Field Overrides */
+    ::ng-deep .inline-input .mat-mdc-form-field-wrapper {
+      padding-bottom: 0;
     }
 
-    ::ng-deep .mat-step-header {
-      padding: 16px 24px;
+    ::ng-deep .inline-input .mat-mdc-form-field-subscript-wrapper {
+      display: none;
     }
 
-    ::ng-deep .mat-step-header .mat-step-icon {
-      background-color: #9E7FFF;
+    ::ng-deep .inline-input .mdc-text-field {
+      height: 40px;
     }
 
-    ::ng-deep .mat-step-header .mat-step-icon-selected {
-      background-color: #10b981;
-    }
-
-    ::ng-deep .mat-step-label {
-      font-weight: 500;
-    }
-
-    /* Material Form Field Overrides for Modal */
-    ::ng-deep .mat-mdc-form-field {
-      width: 100% !important;
-      margin-bottom: 16px !important;
-    }
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background-color: white !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-      border-color: #9E7FFF !important;
+    ::ng-deep .inline-input .mat-mdc-input-element {
+      padding: 8px 12px;
     }
 
     /* Responsive Design */
@@ -508,40 +548,13 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
         max-height: 95vh;
       }
 
-      .modal-header {
-        padding: 16px;
-      }
-
-      .modal-title {
-        font-size: 1.25rem;
-      }
-
-      .step-form {
-        padding: 24px 16px;
-      }
-
-      .form-row {
+      .inline-editor-grid {
         grid-template-columns: 1fr;
         gap: 16px;
       }
 
-      .step-actions {
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .next-button,
-      .submit-button {
-        margin-left: 0;
-        width: 100%;
-      }
-
-      ::ng-deep .mat-stepper-horizontal {
-        flex-direction: column;
-      }
-
-      ::ng-deep .mat-horizontal-stepper-header-container {
-        display: none;
+      .modal-content {
+        padding: 16px;
       }
     }
 
@@ -553,34 +566,14 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
         border-radius: 0;
       }
 
-      .step-form {
-        padding: 16px;
-      }
-
-      .form-row {
+      .field-editor {
+        flex-direction: column;
+        align-items: stretch;
         gap: 12px;
       }
-    }
 
-    /* Accessibility improvements */
-    ::ng-deep .mat-mdc-input-element:focus {
-      outline: 2px solid transparent;
-      outline-offset: 2px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .modal-overlay,
-      .modal-container {
-        transition: none;
-      }
-    }
-
-    /* High contrast mode support */
-    @media (prefers-contrast: high) {
-      ::ng-deep .mdc-notched-outline__leading,
-      ::ng-deep .mdc-notched-outline__notch,
-      ::ng-deep .mdc-notched-outline__trailing {
-        border-width: 3px !important;
+      .field-actions {
+        justify-content: center;
       }
     }
   `]
@@ -590,39 +583,143 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
   @Output() closeModal = new EventEmitter<void>();
   @Output() entityAdded = new EventEmitter<LegalEntity>();
 
-  basicInfoForm!: FormGroup;
-  addressForm!: FormGroup;
-  contactForm!: FormGroup;
-
   isSubmitting = false;
 
-  entityTypes = [
-    { value: LegalEntityType.CORPORATION, label: 'Corporation' },
-    { value: LegalEntityType.LLC, label: 'Limited Liability Company' },
-    { value: LegalEntityType.PARTNERSHIP, label: 'Partnership' },
-    { value: LegalEntityType.SUBSIDIARY, label: 'Subsidiary' },
-    { value: LegalEntityType.BRANCH, label: 'Branch Office' },
-    { value: LegalEntityType.DIVISION, label: 'Division' }
+  basicInfoFields: EditableField[] = [
+    {
+      key: 'name',
+      label: 'Entity Name',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required, Validators.minLength(2)]
+    },
+    {
+      key: 'type',
+      label: 'Entity Type',
+      value: '',
+      type: 'select',
+      isEditing: false,
+      options: [
+        { value: LegalEntityType.CORPORATION, label: 'Corporation' },
+        { value: LegalEntityType.LLC, label: 'Limited Liability Company' },
+        { value: LegalEntityType.PARTNERSHIP, label: 'Partnership' },
+        { value: LegalEntityType.SUBSIDIARY, label: 'Subsidiary' },
+        { value: LegalEntityType.BRANCH, label: 'Branch Office' },
+        { value: LegalEntityType.DIVISION, label: 'Division' }
+      ],
+      validators: [Validators.required]
+    },
+    {
+      key: 'registrationNumber',
+      label: 'Registration Number',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    },
+    {
+      key: 'employeeCount',
+      label: 'Employee Count',
+      value: 0,
+      type: 'number',
+      isEditing: false,
+      validators: [Validators.required, Validators.min(0)]
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      value: EntityStatus.ACTIVE,
+      type: 'select',
+      isEditing: false,
+      options: [
+        { value: EntityStatus.ACTIVE, label: 'Active' },
+        { value: EntityStatus.INACTIVE, label: 'Inactive' },
+        { value: EntityStatus.PENDING, label: 'Pending' },
+        { value: EntityStatus.SUSPENDED, label: 'Suspended' }
+      ],
+      validators: [Validators.required]
+    }
   ];
 
-  entityStatuses = [
-    { value: EntityStatus.ACTIVE, label: 'Active' },
-    { value: EntityStatus.INACTIVE, label: 'Inactive' },
-    { value: EntityStatus.PENDING, label: 'Pending' },
-    { value: EntityStatus.SUSPENDED, label: 'Suspended' }
+  addressFields: EditableField[] = [
+    {
+      key: 'street',
+      label: 'Street Address',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    },
+    {
+      key: 'city',
+      label: 'City',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    },
+    {
+      key: 'postalCode',
+      label: 'Postal Code',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    },
+    {
+      key: 'country',
+      label: 'Country',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    }
+  ];
+
+  contactFields: EditableField[] = [
+    {
+      key: 'name',
+      label: 'Full Name',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    },
+    {
+      key: 'position',
+      label: 'Position',
+      value: '',
+      type: 'text',
+      isEditing: false,
+      validators: [Validators.required]
+    },
+    {
+      key: 'email',
+      label: 'Email Address',
+      value: '',
+      type: 'email',
+      isEditing: false,
+      validators: [Validators.required, Validators.email]
+    },
+    {
+      key: 'phone',
+      label: 'Phone Number',
+      value: '',
+      type: 'tel',
+      isEditing: false,
+      validators: [Validators.required]
+    }
   ];
 
   private destroy$ = new Subject<void>();
+  private originalValues = new Map<string, any>();
 
   constructor(
-    private fb: FormBuilder,
     private companyService: CompanyService
-  ) {
-    this.initializeForms();
-  }
+  ) {}
 
   ngOnInit(): void {
-    // Handle escape key
     document.addEventListener('keydown', this.handleEscapeKey.bind(this));
   }
 
@@ -634,45 +731,78 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && changes['isOpen'].currentValue) {
-      this.resetForms();
+      this.resetFields();
     }
   }
 
-  private initializeForms(): void {
-    this.basicInfoForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]],
-      type: ['', Validators.required],
-      registrationNumber: ['', Validators.required],
-      employeeCount: ['', [Validators.required, Validators.min(0)]],
-      status: [EntityStatus.ACTIVE, Validators.required]
+  private resetFields(): void {
+    // Reset basic info fields
+    this.basicInfoFields.forEach(field => {
+      field.value = field.key === 'status' ? EntityStatus.ACTIVE : 
+                   field.key === 'employeeCount' ? 0 : '';
+      field.isEditing = false;
     });
 
-    this.addressForm = this.fb.group({
-      street: ['', Validators.required],
-      city: ['', Validators.required],
-      postalCode: ['', Validators.required],
-      country: ['', Validators.required]
+    // Reset address fields
+    this.addressFields.forEach(field => {
+      field.value = '';
+      field.isEditing = false;
     });
 
-    this.contactForm = this.fb.group({
-      name: ['', Validators.required],
-      position: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required]
+    // Reset contact fields
+    this.contactFields.forEach(field => {
+      field.value = '';
+      field.isEditing = false;
     });
+
+    this.isSubmitting = false;
+    this.originalValues.clear();
   }
 
-  private resetForms(): void {
-    this.basicInfoForm.reset({
-      status: EntityStatus.ACTIVE
-    });
-    this.addressForm.reset();
-    this.contactForm.reset();
-    this.isSubmitting = false;
+  startEditing(field: EditableField): void {
+    // Save original value for cancel functionality
+    this.originalValues.set(field.key, field.value);
+    field.isEditing = true;
+    
+    // Focus the input after a short delay
+    setTimeout(() => {
+      const input = document.querySelector('.inline-input input, .inline-input mat-select') as HTMLElement;
+      if (input) {
+        input.focus();
+      }
+    }, 100);
+  }
+
+  saveField(field: EditableField): void {
+    field.isEditing = false;
+    this.originalValues.delete(field.key);
+  }
+
+  cancelEdit(field: EditableField): void {
+    const originalValue = this.originalValues.get(field.key);
+    if (originalValue !== undefined) {
+      field.value = originalValue;
+    }
+    field.isEditing = false;
+    this.originalValues.delete(field.key);
+  }
+
+  getDisplayValue(field: EditableField): string {
+    if (field.type === 'select' && field.options) {
+      const option = field.options.find(opt => opt.value === field.value);
+      return option ? option.label : field.value;
+    }
+    return field.value || `Click to add ${field.label.toLowerCase()}`;
   }
 
   isFormValid(): boolean {
-    return this.basicInfoForm.valid && this.addressForm.valid && this.contactForm.valid;
+    const allFields = [...this.basicInfoFields, ...this.addressFields, ...this.contactFields];
+    return allFields.every(field => {
+      if (field.validators?.includes(Validators.required)) {
+        return field.value && field.value.toString().trim() !== '';
+      }
+      return true;
+    });
   }
 
   onSubmit(): void {
@@ -682,9 +812,21 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
 
     this.isSubmitting = true;
 
-    const basicInfo = this.basicInfoForm.value;
-    const address = this.addressForm.value;
-    const contact = this.contactForm.value;
+    // Build entity object from fields
+    const basicInfo = this.basicInfoFields.reduce((obj, field) => {
+      obj[field.key] = field.value;
+      return obj;
+    }, {} as any);
+
+    const address = this.addressFields.reduce((obj, field) => {
+      obj[field.key] = field.value;
+      return obj;
+    }, {} as any);
+
+    const contact = this.contactFields.reduce((obj, field) => {
+      obj[field.key] = field.value;
+      return obj;
+    }, {} as any);
 
     const newEntity: Omit<LegalEntity, 'id' | 'createdAt' | 'updatedAt'> = {
       name: basicInfo.name,
@@ -717,7 +859,6 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
         },
         error: (error) => {
           console.error('Error adding legal entity:', error);
-          // Error handling would be done by parent component
         }
       });
   }
