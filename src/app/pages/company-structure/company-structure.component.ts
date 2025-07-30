@@ -823,7 +823,7 @@ export class CompanyStructureComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadEntities(): void {
+  loadEntities(): void {
     this.isLoadingEntities = true;
     this.companyService.getLegalEntities()
       .pipe(takeUntil(this.destroy$))
