@@ -1,0 +1,996 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Observable, Subject, combineLatest } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
+import { CompanyService } from '../../services/company.service';
+import { LegalEntity, CompanyInfo } from '../../models/legal-entity.model';
+import { AddLegalEntityModalComponent } from '../../components/add-legal-entity-modal/add-legal-entity-modal.component';
+import { EditLegalEntityModalComponent } from '../../components/edit-legal-entity-modal/edit-legal-entity-modal.component';
+import { DeleteConfirmationDialogComponent } from '../../components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+
+@Component({
+  selector: 'app-company-structure',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatButtonToggleModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatDividerModule,
+    MatDialogModule,
+    AddLegalEntityModalComponent,
+    EditLegalEntityModalComponent,
+    DeleteConfirmationDialogComponent
+  ],
+  template: `
+    <div class="company-structure-container">
+      <header class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">Company Structure</h1>
+          <p class="page-description">
+            Manage your company information and legal entity structure for social elections
+          </p>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+        <!-- Company Information Section -->
+        <section class="company-info-section" aria-labelledby="company-info-title">
+          <mat-card class="company-info-card fade-in-up">
+            <mat-card-header>
+              <mat-card-title id="company-info-title">
+                <mat-icon aria-hidden="true">business</mat-icon>
+                Company Information
+              </mat-card-title>
+              <mat-card-subtitle>
+                Update your company details and headquarters information
+              </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div *ngIf="isLoadingCompanyInfo" class="loading-spinner">
+                <mat-spinner diameter="40" aria-label="Loading company information"></mat-spinner>
+                <p class="sr-only">Loading company information</p>
+              </div>
+
+              <form 
+                *ngIf="!isLoadingCompanyInfo && companyForm" 
+                [formGroup]="companyForm" 
+                (ngSubmit)="onSaveCompanyInfo()"
+                class="company-form">
+                
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Company Name</mat-label>
+                    <input 
+                      matInput 
+                      formControlName="name" 
+                      placeholder="Enter company name"
+                      aria-describedby="name-hint"
+                      class="text-input">
+                    <mat-hint id="name-hint">Legal name of your company</mat-hint>
+                    <mat-error *ngIf="companyForm.get('name')?.hasError('required')">
+                      Company name is required
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Industry</mat-label>
+                    <mat-select formControlName="industry" aria-label="Select industry" class="select-input">
+                      <mat-option value="Technology">Technology</mat-option>
+                      <mat-option value="Healthcare">Healthcare</mat-option>
+                      <mat-option value="Finance">Finance</mat-option>
+                      <mat-option value="Manufacturing">Manufacturing</mat-option>
+                      <mat-option value="Retail">Retail</mat-option>
+                      <mat-option value="Education">Education</mat-option>
+                      <mat-option value="Other">Other</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline" class="full-width form-field">
+                  <mat-label>Description</mat-label>
+                  <textarea 
+                    matInput 
+                    formControlName="description" 
+                    rows="3"
+                    placeholder="Brief description of your company"
+                    aria-describedby="description-hint"
+                    class="textarea-input"></textarea>
+                  <mat-hint id="description-hint">Describe your company's main activities</mat-hint>
+                </mat-form-field>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Founded Year</mat-label>
+                    <input 
+                      matInput 
+                      type="number" 
+                      formControlName="foundedYear"
+                      min="1800"
+                      [max]="currentYear"
+                      placeholder="YYYY"
+                      class="text-input">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Website</mat-label>
+                    <input 
+                      matInput 
+                      formControlName="website" 
+                      placeholder="https://example.com"
+                      type="url"
+                      class="text-input">
+                  </mat-form-field>
+                </div>
+
+                <div class="address-section">
+                  <h3 class="section-title">Headquarters Address</h3>
+                  
+                  <mat-form-field appearance="outline" class="full-width form-field">
+                    <mat-label>Street Address</mat-label>
+                    <input 
+                      matInput 
+                      formControlName="street" 
+                      placeholder="Enter street address"
+                      class="text-input">
+                  </mat-form-field>
+
+                  <div class="form-row">
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>City</mat-label>
+                      <input matInput formControlName="city" placeholder="Enter city" class="text-input">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Postal Code</mat-label>
+                      <input matInput formControlName="postalCode" placeholder="Enter postal code" class="text-input">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Country</mat-label>
+                      <input matInput formControlName="country" placeholder="Enter country" class="text-input">
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button 
+                    mat-raised-button 
+                    color="primary" 
+                    type="submit"
+                    [disabled]="companyForm.invalid || isSavingCompanyInfo"
+                    class="save-button">
+                    <mat-icon *ngIf="!isSavingCompanyInfo" aria-hidden="true">save</mat-icon>
+                    <mat-spinner *ngIf="isSavingCompanyInfo" diameter="20" aria-hidden="true"></mat-spinner>
+                    {{ isSavingCompanyInfo ? 'Saving...' : 'Save Company Information' }}
+                  </button>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </section>
+
+        <!-- Legal Entities Section -->
+        <section class="legal-entities-section" aria-labelledby="legal-entities-title">
+          <div class="section-header">
+            <div class="section-title-group">
+              <h2 id="legal-entities-title" class="section-title">Legal Entities</h2>
+              <p class="section-description">
+                Manage all legal entities within your company structure
+              </p>
+            </div>
+            
+            <button 
+              mat-mini-fab 
+              color="primary" 
+              (click)="openAddEntityModal()"
+              class="add-entity-fab"
+              aria-label="Add new legal entity"
+              matTooltip="Add Legal Entity"
+              matTooltipPosition="left">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <div *ngIf="isLoadingEntities" class="loading-spinner">
+            <mat-spinner diameter="40" aria-label="Loading legal entities"></mat-spinner>
+            <p class="sr-only">Loading legal entities</p>
+          </div>
+
+          <div 
+            *ngIf="!isLoadingEntities && legalEntities.length === 0" 
+            class="empty-state">
+            <mat-icon class="empty-icon" aria-hidden="true">business_center</mat-icon>
+            <h3>No Legal Entities</h3>
+            <p>Start by adding your first legal entity to build your company structure.</p>
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="openAddEntityModal()"
+              class="add-first-entity-button">
+              <mat-icon aria-hidden="true">add</mat-icon>
+              Add First Legal Entity
+            </button>
+          </div>
+
+          <div 
+            *ngIf="!isLoadingEntities && legalEntities.length > 0" 
+            class="entities-grid responsive-grid"
+            role="grid"
+            aria-label="Legal entities grid">
+            
+            <mat-card 
+              *ngFor="let entity of legalEntities; trackBy: trackByEntityId" 
+              class="entity-card fade-in-up"
+              role="gridcell"
+              [attr.aria-label]="'Legal entity: ' + entity.name">
+              
+              <mat-card-header>
+                <div mat-card-avatar class="entity-avatar">
+                  <mat-icon [attr.aria-label]="'Entity type: ' + entity.type">
+                    {{ getEntityIcon(entity.type) }}
+                  </mat-icon>
+                </div>
+                
+                <mat-card-title>{{ entity.name }}</mat-card-title>
+                <mat-card-subtitle>{{ entity.type }}</mat-card-subtitle>
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="entity-details">
+                  <div class="detail-item">
+                    <mat-icon class="detail-icon" aria-hidden="true">confirmation_number</mat-icon>
+                    <span class="detail-label">Registration:</span>
+                    <span class="detail-value">{{ entity.registrationNumber }}</span>
+                  </div>
+
+                  <div class="detail-item">
+                    <mat-icon class="detail-icon" aria-hidden="true">location_on</mat-icon>
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">{{ entity.address.city }}, {{ entity.address.country }}</span>
+                  </div>
+
+                  <div class="detail-item">
+                    <mat-icon class="detail-icon" aria-hidden="true">people</mat-icon>
+                    <span class="detail-label">Employees:</span>
+                    <span class="detail-value">{{ entity.employeeCount | number }}</span>
+                  </div>
+
+                  <div class="detail-item">
+                    <mat-icon class="detail-icon" aria-hidden="true">person</mat-icon>
+                    <span class="detail-label">Contact:</span>
+                    <span class="detail-value">{{ entity.contactPerson.name }}</span>
+                  </div>
+                </div>
+
+                <div class="entity-status">
+                  <mat-chip 
+                    [class]="'status-chip status-' + entity.status.toLowerCase()"
+                    [attr.aria-label]="'Status: ' + entity.status">
+                    {{ entity.status }}
+                  </mat-chip>
+                </div>
+              </mat-card-content>
+
+              <mat-card-actions align="end">
+                <button 
+                  mat-button 
+                  color="primary"
+                  (click)="onEditEntity(entity)"
+                  [disabled]="isDeletingEntity === entity.id"
+                  matTooltip="Edit legal entity"
+                  class="action-button">
+                  <mat-icon aria-hidden="true">edit</mat-icon>
+                  Edit
+                </button>
+                <button 
+                  mat-button 
+                  color="warn"
+                  (click)="onDeleteEntity(entity)"
+                  [disabled]="isDeletingEntity === entity.id"
+                  matTooltip="Delete legal entity"
+                  class="action-button delete-button">
+                  <mat-spinner 
+                    *ngIf="isDeletingEntity === entity.id" 
+                    diameter="16" 
+                    aria-hidden="true">
+                  </mat-spinner>
+                  <mat-icon *ngIf="isDeletingEntity !== entity.id" aria-hidden="true">delete</mat-icon>
+                  {{ isDeletingEntity === entity.id ? 'Deleting...' : 'Delete' }}
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </section>
+      </div>
+
+      <!-- Add Legal Entity Modal -->
+      <app-add-legal-entity-modal
+        [isOpen]="isAddModalOpen"
+        (closeModal)="closeAddEntityModal()"
+        (entityAdded)="onEntityAdded($event)">
+      </app-add-legal-entity-modal>
+
+      <!-- Edit Legal Entity Modal -->
+      <app-edit-legal-entity-modal
+        [isOpen]="isEditModalOpen"
+        [entity]="selectedEntity"
+        (closeModal)="closeEditEntityModal()"
+        (entityUpdated)="onEntityUpdated($event)">
+      </app-edit-legal-entity-modal>
+    </div>
+  `,
+  styles: [`
+    .company-structure-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #9E7FFF 0%, #7c3aed 100%);
+      color: white;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-description {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .company-info-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .company-info-card mat-card-header {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 24px;
+    }
+
+    .company-info-card mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #171717;
+    }
+
+    .company-info-card mat-card-subtitle {
+      margin-top: 8px;
+      color: #737373;
+    }
+
+    .company-form {
+      padding: 24px;
+    }
+
+    /* CRITICAL: Form Field Visibility Fixes */
+    .form-field {
+      width: 100% !important;
+      margin-bottom: 16px !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      height: auto !important;
+      min-height: 56px !important;
+    }
+
+    .form-field .mat-mdc-form-field-wrapper {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .text-input,
+    .textarea-input,
+    .select-input {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: white !important;
+      color: #171717 !important;
+      font-size: 16px !important;
+      padding: 12px 16px !important;
+      border: 1px solid #e5e5e5 !important;
+      border-radius: 8px !important;
+      box-sizing: border-box !important;
+      min-height: 48px !important;
+    }
+
+    .text-input:focus,
+    .textarea-input:focus {
+      outline: 2px solid #9E7FFF !important;
+      border-color: #9E7FFF !important;
+    }
+
+    .textarea-input {
+      min-height: 80px !important;
+      resize: vertical !important;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+
+    .full-width {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .address-section {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 24px 0;
+      color: #171717;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .save-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-weight: 500;
+    }
+
+    .legal-entities-section {
+      margin-top: 24px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      gap: 24px;
+    }
+
+    .section-title-group h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #171717;
+    }
+
+    .section-description {
+      color: #737373;
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .add-entity-fab {
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(158, 127, 255, 0.3);
+    }
+
+    .entities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 24px;
+    }
+
+    .entity-card {
+      background: white;
+      transition: all 0.3s ease;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .entity-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .entity-avatar {
+      background: linear-gradient(135deg, #9E7FFF 0%, #7c3aed 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+    }
+
+    .entity-details {
+      margin: 16px 0;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.875rem;
+    }
+
+    .detail-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #737373;
+    }
+
+    .detail-label {
+      font-weight: 500;
+      color: #737373;
+      min-width: 80px;
+    }
+
+    .detail-value {
+      color: #171717;
+      flex: 1;
+    }
+
+    .entity-status {
+      margin-top: 16px;
+    }
+
+    .status-chip {
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: 12px;
+    }
+
+    .status-chip.status-active {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .status-chip.status-inactive {
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+
+    .status-chip.status-pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-chip.status-suspended {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .delete-button {
+      color: #dc2626 !important;
+    }
+
+    .delete-button:hover:not(:disabled) {
+      background-color: rgba(220, 38, 38, 0.1) !important;
+    }
+
+    .delete-button:disabled {
+      opacity: 0.6;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+      background: white;
+      border-radius: 16px;
+      border: 2px dashed #e5e5e5;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #737373;
+      margin-bottom: 24px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: #171717;
+    }
+
+    .empty-state p {
+      color: #737373;
+      margin: 0 0 32px 0;
+      font-size: 1rem;
+    }
+
+    .add-first-entity-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+    }
+
+    .loading-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      gap: 16px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .content-wrapper {
+        padding: 24px 16px;
+        gap: 32px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+      }
+
+      .add-entity-fab {
+        align-self: flex-end;
+      }
+
+      .entities-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header {
+        padding: 32px 16px;
+      }
+
+      .page-title {
+        font-size: 1.75rem;
+      }
+
+      .company-form {
+        padding: 16px;
+      }
+    }
+  `]
+})
+export class CompanyStructureComponent implements OnInit, OnDestroy {
+  companyForm!: FormGroup;
+  companyInfo: CompanyInfo | null = null;
+  legalEntities: LegalEntity[] = [];
+  
+  isLoadingCompanyInfo = false;
+  isLoadingEntities = false;
+  isSavingCompanyInfo = false;
+  isAddModalOpen = false;
+  isEditModalOpen = false;
+  isDeletingEntity: string | null = null;
+  selectedEntity: LegalEntity | null = null;
+  
+  currentYear = new Date().getFullYear();
+  
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private fb: FormBuilder,
+    private companyService: CompanyService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {
+    this.initializeForm();
+  }
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeForm(): void {
+    this.companyForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      description: [''],
+      industry: ['', Validators.required],
+      foundedYear: ['', [Validators.min(1800), Validators.max(this.currentYear)]],
+      website: [''],
+      street: [''],
+      city: [''],
+      postalCode: [''],
+      country: ['']
+    });
+  }
+
+  private loadData(): void {
+    this.isLoadingCompanyInfo = true;
+    this.isLoadingEntities = true;
+
+    combineLatest([
+      this.companyService.getCompanyInfo(),
+      this.companyService.getLegalEntities()
+    ]).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: ([companyInfo, entities]) => {
+        this.companyInfo = companyInfo;
+        this.legalEntities = entities;
+        
+        if (companyInfo) {
+          this.populateCompanyForm(companyInfo);
+        }
+        
+        this.isLoadingCompanyInfo = false;
+        this.isLoadingEntities = false;
+      },
+      error: (error) => {
+        console.error('Error loading data:', error);
+        this.showErrorMessage('Failed to load company data');
+        this.isLoadingCompanyInfo = false;
+        this.isLoadingEntities = false;
+      }
+    });
+  }
+
+  private populateCompanyForm(companyInfo: CompanyInfo): void {
+    this.companyForm.patchValue({
+      name: companyInfo.name,
+      description: companyInfo.description,
+      industry: companyInfo.industry,
+      foundedYear: companyInfo.foundedYear,
+      website: companyInfo.website,
+      street: companyInfo.headquarters.street,
+      city: companyInfo.headquarters.city,
+      postalCode: companyInfo.headquarters.postalCode,
+      country: companyInfo.headquarters.country
+    });
+  }
+
+  onSaveCompanyInfo(): void {
+    if (this.companyForm.invalid || !this.companyInfo) {
+      return;
+    }
+
+    this.isSavingCompanyInfo = true;
+    const formValue = this.companyForm.value;
+
+    const updatedCompanyInfo: CompanyInfo = {
+      ...this.companyInfo,
+      name: formValue.name,
+      description: formValue.description,
+      industry: formValue.industry,
+      foundedYear: formValue.foundedYear,
+      website: formValue.website,
+      headquarters: {
+        street: formValue.street,
+        city: formValue.city,
+        postalCode: formValue.postalCode,
+        country: formValue.country
+      }
+    };
+
+    this.companyService.updateCompanyInfo(updatedCompanyInfo)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isSavingCompanyInfo = false)
+      )
+      .subscribe({
+        next: (updated) => {
+          this.companyInfo = updated;
+          this.showSuccessMessage('Company information updated successfully');
+        },
+        error: (error) => {
+          console.error('Error updating company info:', error);
+          this.showErrorMessage('Failed to update company information');
+        }
+      });
+  }
+
+  openAddEntityModal(): void {
+    this.isAddModalOpen = true;
+  }
+
+  closeAddEntityModal(): void {
+    this.isAddModalOpen = false;
+  }
+
+  onEntityAdded(entity: LegalEntity): void {
+    this.legalEntities = [...this.legalEntities, entity];
+    this.closeAddEntityModal();
+    this.showSuccessMessage(`Legal entity "${entity.name}" added successfully`);
+  }
+
+  onEditEntity(entity: LegalEntity): void {
+    this.selectedEntity = entity;
+    this.isEditModalOpen = true;
+  }
+
+  closeEditEntityModal(): void {
+    this.isEditModalOpen = false;
+    this.selectedEntity = null;
+  }
+
+  onEntityUpdated(updatedEntity: LegalEntity): void {
+    const index = this.legalEntities.findIndex(e => e.id === updatedEntity.id);
+    if (index !== -1) {
+      this.legalEntities = [
+        ...this.legalEntities.slice(0, index),
+        updatedEntity,
+        ...this.legalEntities.slice(index + 1)
+      ];
+    }
+    this.closeEditEntityModal();
+    this.showSuccessMessage(`Legal entity "${updatedEntity.name}" updated successfully`);
+  }
+
+  onDeleteEntity(entity: LegalEntity): void {
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Legal Entity',
+        message: `Are you sure you want to delete "${entity.name}"?`,
+        details: [
+          `Type: ${entity.type}`,
+          `Registration: ${entity.registrationNumber}`,
+          `Employees: ${entity.employeeCount}`
+        ],
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.deleteEntity(entity);
+      }
+    });
+  }
+
+  private deleteEntity(entity: LegalEntity): void {
+    this.isDeletingEntity = entity.id;
+
+    this.companyService.deleteLegalEntity(entity.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isDeletingEntity = null)
+      )
+      .subscribe({
+        next: () => {
+          this.legalEntities = this.legalEntities.filter(e => e.id !== entity.id);
+          this.showSuccessMessage(`Legal entity "${entity.name}" deleted successfully`);
+        },
+        error: (error) => {
+          console.error('Error deleting entity:', error);
+          this.showErrorMessage(`Failed to delete "${entity.name}"`);
+        }
+      });
+  }
+
+  getEntityIcon(type: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Corporation': 'corporate_fare',
+      'Limited Liability Company': 'business',
+      'Partnership': 'handshake',
+      'Subsidiary': 'account_tree',
+      'Branch Office': 'location_city',
+      'Division': 'workspaces'
+    };
+    return iconMap[type] || 'business';
+  }
+
+  trackByEntityId(index: number, entity: LegalEntity): string {
+    return entity.id;
+  }
+
+  private showSuccessMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  private showErrorMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  private showInfoMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['info-snackbar']
+    });
+  }
+}

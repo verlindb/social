@@ -1,0 +1,340 @@
+@import '@angular/material/prebuilt-themes/purple-green.css';
+
+:root {
+  --primary-color: #9E7FFF;
+  --secondary-color: #38bdf8;
+  --accent-color: #f472b6;
+  --background-color: #fafafa;
+  --surface-color: #ffffff;
+  --text-color: #212121;
+  --text-secondary-color: #757575;
+  --border-color: #e0e0e0;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* ===== CRITICAL INPUT FIELD STYLING FIXES ===== */
+
+/* Force visibility and proper styling for all form fields */
+.mat-mdc-form-field {
+  width: 100% !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  margin-bottom: 16px !important;
+  min-height: 56px !important;
+}
+
+/* Ensure form field wrapper has visible borders and background */
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  width: 100% !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background-color: #ffffff !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 8px !important;
+  min-height: 56px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Input element styling with proper contrast */
+.mat-mdc-input-element,
+input[matInput],
+textarea[matInput] {
+  width: 100% !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background-color: transparent !important;
+  color: #1f2937 !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  padding: 16px 14px !important;
+  border: none !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  min-height: 24px !important;
+  line-height: 1.5 !important;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Textarea specific styling */
+textarea[matInput] {
+  min-height: 80px !important;
+  resize: vertical !important;
+  font-family: 'Roboto', sans-serif !important;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+}
+
+/* Select field styling */
+.mat-mdc-select {
+  width: 100% !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-select-trigger {
+  width: 100% !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background-color: transparent !important;
+  color: #1f2937 !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  padding: 16px 14px !important;
+  min-height: 24px !important;
+  line-height: 1.5 !important;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Label styling - floating labels */
+.mat-mdc-form-field-label {
+  color: #6b7280 !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transition: all 0.2s ease !important;
+}
+
+.mat-mdc-form-field-label.mdc-floating-label--float-above {
+  color: var(--primary-color) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Hover state - subtle border color change */
+.mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  border-color: #9ca3af !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Focused state - prominent styling */
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: var(--primary-color) !important;
+}
+
+/* Error state */
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+  border-color: var(--error-color) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-label {
+  color: var(--error-color) !important;
+}
+
+/* Disabled state */
+.mat-mdc-form-field.mat-form-field-disabled .mat-mdc-text-field-wrapper {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  opacity: 0.6 !important;
+}
+
+/* Placeholder text styling */
+.mat-mdc-input-element::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* Hint text styling */
+.mat-mdc-form-field-hint {
+  color: #6b7280 !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 4px !important;
+}
+
+/* Error text styling */
+.mat-mdc-form-field-error {
+  color: var(--error-color) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 4px !important;
+}
+
+/* Outline appearance specific fixes */
+.mat-mdc-form-field-appearance-outline .mat-mdc-text-field-wrapper {
+  background-color: #ffffff !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 8px !important;
+}
+
+.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: var(--primary-color) !important;
+}
+
+.mat-mdc-form-field-appearance-outline:hover .mat-mdc-text-field-wrapper {
+  border-color: #9ca3af !important;
+}
+
+/* Remove default Material outline */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline {
+  display: none !important;
+}
+
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing {
+  display: none !important;
+}
+
+/* Custom Material Theme Overrides */
+.mat-mdc-card {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s ease !important;
+}
+
+.mat-mdc-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px);
+}
+
+.mat-mdc-button {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+}
+
+.mat-mdc-fab {
+  box-shadow: 0 4px 20px rgba(158, 127, 255, 0.3) !important;
+}
+
+/* Focus styles for accessibility */
+.mat-mdc-button:focus,
+.mat-mdc-icon-button:focus,
+.mat-mdc-fab:focus {
+  outline: 2px solid var(--primary-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mat-mdc-card {
+    border: 2px solid var(--border-color) !important;
+  }
+  
+  .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+    border: 3px solid var(--border-color) !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* Responsive grid */
+.responsive-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Accessibility improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Snackbar styles */
+.success-snackbar {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: var(--error-color) !important;
+  color: white !important;
+}
