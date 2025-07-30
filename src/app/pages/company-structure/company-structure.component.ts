@@ -4,9 +4,6 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -32,9 +29,6 @@ import { DeleteConfirmationDialogComponent } from '../../components/delete-confi
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatButtonToggleModule,
@@ -84,97 +78,131 @@ import { DeleteConfirmationDialogComponent } from '../../components/delete-confi
                 class="company-form">
                 
                 <div class="form-row">
-                  <mat-form-field appearance="outline" class="form-field">
-                    <mat-label>Company Name</mat-label>
+                  <div class="form-group">
+                    <label for="company-name" class="form-label">Company Name *</label>
                     <input 
-                      matInput 
+                      id="company-name"
+                      type="text"
                       formControlName="name" 
+                      class="pure-input"
                       placeholder="Enter company name"
-                      aria-describedby="name-hint"
-                      class="text-input">
-                    <mat-hint id="name-hint">Legal name of your company</mat-hint>
-                    <mat-error *ngIf="companyForm.get('name')?.hasError('required')">
+                      autocomplete="off">
+                    <div class="form-hint">Legal name of your company</div>
+                    <div *ngIf="companyForm.get('name')?.hasError('required') && companyForm.get('name')?.touched" class="error-message">
                       Company name is required
-                    </mat-error>
-                  </mat-form-field>
+                    </div>
+                  </div>
 
-                  <mat-form-field appearance="outline" class="form-field">
-                    <mat-label>Industry</mat-label>
-                    <mat-select formControlName="industry" aria-label="Select industry" class="select-input">
-                      <mat-option value="Technology">Technology</mat-option>
-                      <mat-option value="Healthcare">Healthcare</mat-option>
-                      <mat-option value="Finance">Finance</mat-option>
-                      <mat-option value="Manufacturing">Manufacturing</mat-option>
-                      <mat-option value="Retail">Retail</mat-option>
-                      <mat-option value="Education">Education</mat-option>
-                      <mat-option value="Other">Other</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+                  <div class="form-group">
+                    <label for="industry" class="form-label">Industry *</label>
+                    <div class="pure-select-wrapper">
+                      <select 
+                        id="industry"
+                        formControlName="industry" 
+                        class="pure-select"
+                        aria-label="Select industry">
+                        <option value="">Select industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Education">Education</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <span class="select-arrow">▼</span>
+                    </div>
+                    <div *ngIf="companyForm.get('industry')?.hasError('required') && companyForm.get('industry')?.touched" class="error-message">
+                      Industry is required
+                    </div>
+                  </div>
                 </div>
 
-                <mat-form-field appearance="outline" class="full-width form-field">
-                  <mat-label>Description</mat-label>
+                <div class="form-group full-width">
+                  <label for="description" class="form-label">Description</label>
                   <textarea 
-                    matInput 
+                    id="description"
                     formControlName="description" 
+                    class="pure-textarea"
                     rows="3"
                     placeholder="Brief description of your company"
-                    aria-describedby="description-hint"
-                    class="textarea-input"></textarea>
-                  <mat-hint id="description-hint">Describe your company's main activities</mat-hint>
-                </mat-form-field>
+                    autocomplete="off"></textarea>
+                  <div class="form-hint">Describe your company's main activities</div>
+                </div>
 
                 <div class="form-row">
-                  <mat-form-field appearance="outline" class="form-field">
-                    <mat-label>Founded Year</mat-label>
+                  <div class="form-group">
+                    <label for="founded-year" class="form-label">Founded Year</label>
                     <input 
-                      matInput 
+                      id="founded-year"
                       type="number" 
                       formControlName="foundedYear"
+                      class="pure-input"
                       min="1800"
                       [max]="currentYear"
                       placeholder="YYYY"
-                      class="text-input">
-                  </mat-form-field>
+                      autocomplete="off">
+                  </div>
 
-                  <mat-form-field appearance="outline" class="form-field">
-                    <mat-label>Website</mat-label>
+                  <div class="form-group">
+                    <label for="website" class="form-label">Website</label>
                     <input 
-                      matInput 
-                      formControlName="website" 
-                      placeholder="https://example.com"
+                      id="website"
                       type="url"
-                      class="text-input">
-                  </mat-form-field>
+                      formControlName="website" 
+                      class="pure-input"
+                      placeholder="https://example.com"
+                      autocomplete="off">
+                  </div>
                 </div>
 
                 <div class="address-section">
                   <h3 class="section-title">Headquarters Address</h3>
                   
-                  <mat-form-field appearance="outline" class="full-width form-field">
-                    <mat-label>Street Address</mat-label>
+                  <div class="form-group full-width">
+                    <label for="street" class="form-label">Street Address</label>
                     <input 
-                      matInput 
+                      id="street"
+                      type="text"
                       formControlName="street" 
+                      class="pure-input"
                       placeholder="Enter street address"
-                      class="text-input">
-                  </mat-form-field>
+                      autocomplete="off">
+                  </div>
 
                   <div class="form-row">
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>City</mat-label>
-                      <input matInput formControlName="city" placeholder="Enter city" class="text-input">
-                    </mat-form-field>
+                    <div class="form-group">
+                      <label for="city" class="form-label">City</label>
+                      <input 
+                        id="city"
+                        type="text"
+                        formControlName="city" 
+                        class="pure-input"
+                        placeholder="Enter city"
+                        autocomplete="off">
+                    </div>
 
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Postal Code</mat-label>
-                      <input matInput formControlName="postalCode" placeholder="Enter postal code" class="text-input">
-                    </mat-form-field>
+                    <div class="form-group">
+                      <label for="postal-code" class="form-label">Postal Code</label>
+                      <input 
+                        id="postal-code"
+                        type="text"
+                        formControlName="postalCode" 
+                        class="pure-input"
+                        placeholder="Enter postal code"
+                        autocomplete="off">
+                    </div>
 
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Country</mat-label>
-                      <input matInput formControlName="country" placeholder="Enter country" class="text-input">
-                    </mat-form-field>
+                    <div class="form-group">
+                      <label for="country" class="form-label">Country</label>
+                      <input 
+                        id="country"
+                        type="text"
+                        formControlName="country" 
+                        class="pure-input"
+                        placeholder="Enter country"
+                        autocomplete="off">
+                    </div>
                   </div>
                 </div>
 
@@ -415,7 +443,113 @@ import { DeleteConfirmationDialogComponent } from '../../components/delete-confi
       padding: 24px;
     }
 
-    /* CRITICAL: Form Field Visibility Fixes */
+    /* Pure HTML Form Styles */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .pure-input,
+    .pure-textarea {
+      width: 100% !important;
+      padding: 12px 16px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background-color: white;
+      color: #1f2937;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .pure-input:focus,
+    .pure-textarea:focus {
+      border-color: #9E7FFF;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
+    }
+
+    .pure-input:hover,
+    .pure-textarea:hover {
+      border-color: #9ca3af;
+    }
+
+    .pure-input::placeholder,
+    .pure-textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .pure-textarea {
+      min-height: 80px;
+      resize: vertical;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .pure-select-wrapper {
+      position: relative;
+    }
+
+    .pure-select {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background-color: white;
+      color: #1f2937;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .pure-select:focus {
+      border-color: #9E7FFF;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
+    }
+
+    .pure-select:hover {
+      border-color: #9ca3af;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      pointer-events: none;
+      font-size: 12px;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Legacy Material overrides - keep for compatibility */
     .form-field {
       width: 100% !important;
       margin-bottom: 16px !important;
