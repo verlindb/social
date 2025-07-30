@@ -1,10 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 
@@ -16,11 +12,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule
+    ReactiveFormsModule
   ],
   template: `
     <div 
@@ -35,15 +27,15 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       <div class="modal-container" (click)="$event.stopPropagation()">
         <header class="modal-header">
           <h2 id="modal-title" class="modal-title">
-            <mat-icon aria-hidden="true">add_business</mat-icon>
+            <span class="icon">🏢</span>
             Add Legal Entity
           </h2>
           <button 
-            mat-icon-button 
             (click)="onClose()"
             class="close-button"
-            aria-label="Close modal">
-            <mat-icon>close</mat-icon>
+            aria-label="Close modal"
+            type="button">
+            ✕
           </button>
         </header>
 
@@ -52,7 +44,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
           <div class="stepper-header">
             <div class="step-indicator" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
               <div class="step-number">
-                <mat-icon *ngIf="currentStep > 1">check</mat-icon>
+                <span *ngIf="currentStep > 1">✓</span>
                 <span *ngIf="currentStep <= 1">1</span>
               </div>
               <span class="step-label">Basic Info</span>
@@ -60,7 +52,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             <div class="step-connector" [class.completed]="currentStep > 1"></div>
             <div class="step-indicator" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
               <div class="step-number">
-                <mat-icon *ngIf="currentStep > 2">check</mat-icon>
+                <span *ngIf="currentStep > 2">✓</span>
                 <span *ngIf="currentStep <= 2">2</span>
               </div>
               <span class="step-label">Address</span>
@@ -68,7 +60,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             <div class="step-connector" [class.completed]="currentStep > 2"></div>
             <div class="step-indicator" [class.active]="currentStep === 3" [class.completed]="currentStep > 3">
               <div class="step-number">
-                <mat-icon *ngIf="currentStep > 3">check</mat-icon>
+                <span *ngIf="currentStep > 3">✓</span>
                 <span *ngIf="currentStep <= 3">3</span>
               </div>
               <span class="step-label">Contact</span>
@@ -81,7 +73,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             <div class="step-content step-1" [class.active-step]="currentStep === 1">
               <div class="form-section" *ngIf="currentStep === 1">
                 <h3 class="section-title">
-                  <mat-icon>business</mat-icon>
+                  <span class="section-icon">🏢</span>
                   Basic Information
                 </h3>
                 
@@ -167,12 +159,10 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <div></div> <!-- Empty div for spacing -->
                 <button 
                   type="button"
-                  mat-raised-button 
-                  color="primary"
                   (click)="nextStep()"
                   [disabled]="!isStep1Valid()"
-                  class="next-button">
-                  <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+                  class="btn btn-primary next-button">
+                  <span class="btn-icon">→</span>
                   Next: Address
                 </button>
               </div>
@@ -182,7 +172,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             <div class="step-content step-2" [class.active-step]="currentStep === 2">
               <div class="form-section" *ngIf="currentStep === 2">
                 <h3 class="section-title">
-                  <mat-icon>location_on</mat-icon>
+                  <span class="section-icon">📍</span>
                   Address Information
                 </h3>
                 
@@ -248,20 +238,17 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
               <div class="step-actions" *ngIf="currentStep === 2">
                 <button 
                   type="button"
-                  mat-button 
                   (click)="previousStep()"
-                  class="back-button">
-                  <mat-icon aria-hidden="true">arrow_back</mat-icon>
+                  class="btn btn-secondary back-button">
+                  <span class="btn-icon">←</span>
                   Back
                 </button>
                 <button 
                   type="button"
-                  mat-raised-button 
-                  color="primary"
                   (click)="nextStep()"
                   [disabled]="!isStep2Valid()"
-                  class="next-button">
-                  <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+                  class="btn btn-primary next-button">
+                  <span class="btn-icon">→</span>
                   Next: Contact
                 </button>
               </div>
@@ -271,7 +258,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             <div class="step-content step-3" [class.active-step]="currentStep === 3">
               <div class="form-section" *ngIf="currentStep === 3">
                 <h3 class="section-title">
-                  <mat-icon>person</mat-icon>
+                  <span class="section-icon">👤</span>
                   Contact Person
                 </h3>
                 
@@ -338,20 +325,17 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
               <div class="step-actions" *ngIf="currentStep === 3">
                 <button 
                   type="button"
-                  mat-button 
                   (click)="previousStep()"
-                  class="back-button">
-                  <mat-icon aria-hidden="true">arrow_back</mat-icon>
+                  class="btn btn-secondary back-button">
+                  <span class="btn-icon">←</span>
                   Back
                 </button>
                 <button 
                   type="submit"
-                  mat-raised-button 
-                  color="primary"
                   [disabled]="entityForm.invalid || isSubmitting"
-                  class="submit-button">
-                  <mat-icon *ngIf="!isSubmitting" aria-hidden="true">save</mat-icon>
-                  <mat-spinner *ngIf="isSubmitting" diameter="20" aria-hidden="true"></mat-spinner>
+                  class="btn btn-primary submit-button">
+                  <span *ngIf="!isSubmitting" class="btn-icon">💾</span>
+                  <span *ngIf="isSubmitting" class="spinner"></span>
                   {{ isSubmitting ? 'Adding...' : 'Add Legal Entity' }}
                 </button>
               </div>
@@ -419,7 +403,23 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     }
 
     .close-button {
+      background: none;
+      border: none;
       color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    .close-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      margin-right: 8px;
     }
 
     .modal-content {
@@ -558,6 +558,10 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       border-bottom: 2px solid #e5e7eb;
     }
 
+    .section-icon {
+      font-size: 1.25rem;
+    }
+
     .form-group {
       margin-bottom: 20px;
       position: relative;
@@ -657,28 +661,76 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       pointer-events: auto;
     }
 
-    .back-button {
+    /* Button Styles */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       gap: 8px;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
       color: #6b7280;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-icon {
+      font-size: 16px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .back-button {
       pointer-events: auto;
       z-index: 3;
     }
 
     .next-button,
     .submit-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
       pointer-events: auto;
       z-index: 3;
-    }
-
-    .submit-button {
-      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-      color: white;
     }
 
     /* Ensure no element interference */
