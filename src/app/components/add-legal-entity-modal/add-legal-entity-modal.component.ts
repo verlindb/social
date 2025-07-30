@@ -78,7 +78,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
           <form [formGroup]="entityForm" (ngSubmit)="onSubmit()" class="entity-form">
             
             <!-- Step 1: Basic Information -->
-            <div class="step-content" [style.display]="currentStep === 1 ? 'block' : 'none'">
+            <div class="step-content" [class.active-step]="currentStep === 1">
               <div class="form-section">
                 <h3 class="section-title">
                   <mat-icon>business</mat-icon>
@@ -179,7 +179,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 2: Address Information -->
-            <div class="step-content" [style.display]="currentStep === 2 ? 'block' : 'none'">
+            <div class="step-content" [class.active-step]="currentStep === 2">
               <div class="form-section">
                 <h3 class="section-title">
                   <mat-icon>location_on</mat-icon>
@@ -268,7 +268,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             </div>
 
             <!-- Step 3: Contact Information -->
-            <div class="step-content" [style.display]="currentStep === 3 ? 'block' : 'none'">
+            <div class="step-content" [class.active-step]="currentStep === 3">
               <div class="form-section">
                 <h3 class="section-title">
                   <mat-icon>person</mat-icon>
@@ -508,15 +508,39 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       position: relative;
       z-index: 1;
       pointer-events: auto;
+      width: 100%;
+      height: auto;
+      overflow: hidden;
     }
 
-    .step-content[style*="none"] {
+    /* Completely hide inactive steps */
+    .step-content:not(.active-step) {
       display: none !important;
       visibility: hidden !important;
       position: absolute !important;
       top: -9999px !important;
       left: -9999px !important;
       pointer-events: none !important;
+      z-index: -1000 !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Ensure active step is fully visible and interactive */
+    .step-content.active-step {
+      display: block !important;
+      visibility: visible !important;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      pointer-events: auto !important;
+      z-index: 10 !important;
+      opacity: 1 !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
     }
 
     .form-section {
@@ -574,6 +598,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       z-index: 3;
       pointer-events: auto;
       cursor: text;
+      position: relative;
     }
 
     .form-select {
@@ -606,6 +631,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
+      position: relative;
+      z-index: 3;
     }
 
     .error-message {
