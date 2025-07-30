@@ -205,20 +205,6 @@ import { DeleteConfirmationDialogComponent } from '../../components/delete-confi
                     </div>
                   </div>
                 </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="country" class="form-label">Country</label>
-                      <input 
-                        id="country"
-                        type="text"
-                        formControlName="country" 
-                        class="pure-input"
-                        placeholder="Enter country"
-                        autocomplete="off">
-                    </div>
-                  </div>
-                </div>
 
                 <div class="form-actions">
                   <button 
