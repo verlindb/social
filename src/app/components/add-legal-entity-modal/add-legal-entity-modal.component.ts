@@ -73,13 +73,14 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <div class="form-section">
                   <h3 class="section-title">Entity Details</h3>
                   
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="form-field">
                     <mat-label>Entity Name</mat-label>
                     <input 
                       matInput 
                       formControlName="name" 
                       placeholder="Enter legal entity name"
-                      aria-describedby="name-hint">
+                      aria-describedby="name-hint"
+                      class="form-input">
                     <mat-hint id="name-hint">Full legal name of the entity</mat-hint>
                     <mat-error *ngIf="basicInfoForm.get('name')?.hasError('required')">
                       Entity name is required
@@ -90,11 +91,12 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                   </mat-form-field>
 
                   <div class="form-row">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Entity Type</mat-label>
                       <mat-select 
                         formControlName="type" 
-                        aria-label="Select entity type">
+                        aria-label="Select entity type"
+                        class="form-select">
                         <mat-option 
                           *ngFor="let type of entityTypes" 
                           [value]="type.value">
@@ -106,12 +108,13 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       </mat-error>
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Registration Number</mat-label>
                       <input 
                         matInput 
                         formControlName="registrationNumber" 
-                        placeholder="Enter registration number">
+                        placeholder="Enter registration number"
+                        class="form-input">
                       <mat-error *ngIf="basicInfoForm.get('registrationNumber')?.hasError('required')">
                         Registration number is required
                       </mat-error>
@@ -119,14 +122,15 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                   </div>
 
                   <div class="form-row">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Employee Count</mat-label>
                       <input 
                         matInput 
                         type="number" 
                         formControlName="employeeCount" 
                         min="0"
-                        placeholder="Number of employees">
+                        placeholder="Number of employees"
+                        class="form-input">
                       <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('required')">
                         Employee count is required
                       </mat-error>
@@ -135,11 +139,12 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                       </mat-error>
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Status</mat-label>
                       <mat-select 
                         formControlName="status" 
-                        aria-label="Select entity status">
+                        aria-label="Select entity status"
+                        class="form-select">
                         <mat-option 
                           *ngFor="let status of entityStatuses" 
                           [value]="status.value">
@@ -173,47 +178,51 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <div class="form-section">
                   <h3 class="section-title">Entity Address</h3>
                   
-                  <mat-form-field appearance="outline" class="full-width">
+                  <mat-form-field appearance="outline" class="form-field full-width">
                     <mat-label>Street Address</mat-label>
                     <input 
                       matInput 
                       formControlName="street" 
-                      placeholder="Enter street address">
+                      placeholder="Enter street address"
+                      class="form-input">
                     <mat-error *ngIf="addressForm.get('street')?.hasError('required')">
                       Street address is required
                     </mat-error>
                   </mat-form-field>
 
                   <div class="form-row">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>City</mat-label>
                       <input 
                         matInput 
                         formControlName="city" 
-                        placeholder="Enter city">
+                        placeholder="Enter city"
+                        class="form-input">
                       <mat-error *ngIf="addressForm.get('city')?.hasError('required')">
                         City is required
                       </mat-error>
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Postal Code</mat-label>
                       <input 
                         matInput 
                         formControlName="postalCode" 
-                        placeholder="Enter postal code">
+                        placeholder="Enter postal code"
+                        class="form-input">
                       <mat-error *ngIf="addressForm.get('postalCode')?.hasError('required')">
                         Postal code is required
                       </mat-error>
                     </mat-form-field>
                   </div>
 
-                  <mat-form-field appearance="outline" class="full-width">
+                  <mat-form-field appearance="outline" class="form-field full-width">
                     <mat-label>Country</mat-label>
                     <input 
                       matInput 
                       formControlName="country" 
-                      placeholder="Enter country">
+                      placeholder="Enter country"
+                      class="form-input">
                     <mat-error *ngIf="addressForm.get('country')?.hasError('required')">
                       Country is required
                     </mat-error>
@@ -251,36 +260,39 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                   <h3 class="section-title">Contact Person</h3>
                   
                   <div class="form-row">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Full Name</mat-label>
                       <input 
                         matInput 
                         formControlName="name" 
-                        placeholder="Enter contact person name">
+                        placeholder="Enter contact person name"
+                        class="form-input">
                       <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
                         Contact name is required
                       </mat-error>
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-field">
                       <mat-label>Position</mat-label>
                       <input 
                         matInput 
                         formControlName="position" 
-                        placeholder="Enter position/title">
+                        placeholder="Enter position/title"
+                        class="form-input">
                       <mat-error *ngIf="contactForm.get('position')?.hasError('required')">
                         Position is required
                       </mat-error>
                     </mat-form-field>
                   </div>
 
-                  <mat-form-field appearance="outline" class="full-width">
+                  <mat-form-field appearance="outline" class="form-field full-width">
                     <mat-label>Email Address</mat-label>
                     <input 
                       matInput 
                       type="email" 
                       formControlName="email" 
-                      placeholder="Enter email address">
+                      placeholder="Enter email address"
+                      class="form-input">
                     <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
                       Email is required
                     </mat-error>
@@ -289,13 +301,14 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                     </mat-error>
                   </mat-form-field>
 
-                  <mat-form-field appearance="outline" class="full-width">
+                  <mat-form-field appearance="outline" class="form-field full-width">
                     <mat-label>Phone Number</mat-label>
                     <input 
                       matInput 
                       type="tel" 
                       formControlName="phone" 
-                      placeholder="Enter phone number">
+                      placeholder="Enter phone number"
+                      class="form-input">
                     <mat-error *ngIf="contactForm.get('phone')?.hasError('required')">
                       Phone number is required
                     </mat-error>
@@ -434,6 +447,170 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       margin-bottom: 16px;
     }
 
+    /* CRITICAL: Complete form field override */
+    .form-field {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 100 !important;
+      margin-bottom: 16px !important;
+      min-height: 80px !important;
+      background: white !important;
+      pointer-events: auto !important;
+    }
+
+    /* Override Material wrapper completely */
+    .form-field ::ng-deep .mat-mdc-text-field-wrapper {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: white !important;
+      border: 2px solid #d1d5db !important;
+      border-radius: 8px !important;
+      min-height: 56px !important;
+      position: relative !important;
+      z-index: 100 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
+      box-shadow: none !important;
+    }
+
+    /* Force input visibility and functionality */
+    .form-input {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: white !important;
+      color: #1f2937 !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      padding: 16px 14px !important;
+      border: none !important;
+      outline: none !important;
+      box-sizing: border-box !important;
+      min-height: 24px !important;
+      line-height: 1.5 !important;
+      font-family: 'Roboto', sans-serif !important;
+      position: relative !important;
+      z-index: 100 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+
+    /* Force select functionality */
+    .form-select {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 100 !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+
+    .form-field ::ng-deep .mat-mdc-select-trigger {
+      width: 100% !important;
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: white !important;
+      color: #1f2937 !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      padding: 16px 14px !important;
+      min-height: 24px !important;
+      line-height: 1.5 !important;
+      font-family: 'Roboto', sans-serif !important;
+      position: relative !important;
+      z-index: 100 !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+
+    /* Remove Material outline completely */
+    .form-field ::ng-deep .mdc-notched-outline {
+      display: none !important;
+    }
+
+    .form-field ::ng-deep .mdc-notched-outline__leading,
+    .form-field ::ng-deep .mdc-notched-outline__notch,
+    .form-field ::ng-deep .mdc-notched-outline__trailing {
+      display: none !important;
+    }
+
+    /* Force label visibility */
+    .form-field ::ng-deep .mat-mdc-form-field-label {
+      color: #6b7280 !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 100 !important;
+      pointer-events: auto !important;
+      cursor: text !important;
+    }
+
+    /* Focus states */
+    .form-field:focus-within ::ng-deep .mat-mdc-text-field-wrapper {
+      border-color: #9E7FFF !important;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1) !important;
+    }
+
+    .form-field:focus-within ::ng-deep .mat-mdc-form-field-label {
+      color: #9E7FFF !important;
+    }
+
+    /* Hover states */
+    .form-field:hover ::ng-deep .mat-mdc-text-field-wrapper {
+      border-color: #9ca3af !important;
+    }
+
+    /* Ensure form field infix is properly sized */
+    .form-field ::ng-deep .mat-mdc-form-field-infix {
+      width: 100% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      position: relative !important;
+      z-index: 100 !important;
+      padding: 16px 14px !important;
+      border: none !important;
+      min-height: 24px !important;
+    }
+
+    /* Fix subscript wrapper */
+    .form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 100 !important;
+    }
+
+    /* Override any global blocking styles */
+    .form-field * {
+      pointer-events: auto !important;
+    }
+
+    /* Ensure stepper doesn't block form fields */
+    ::ng-deep .mat-step-content {
+      overflow: visible !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    ::ng-deep .mat-stepper-horizontal .mat-step-content {
+      overflow: visible !important;
+    }
+
     .step-actions {
       display: flex;
       justify-content: space-between;
@@ -481,280 +658,6 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
 
     ::ng-deep .mat-step-label {
       font-weight: 500;
-    }
-
-    /* CRITICAL: Force form field visibility and remove any blocking elements */
-    .mat-mdc-form-field {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 10 !important;
-      margin-bottom: 16px !important;
-      min-height: 56px !important;
-      background: transparent !important;
-      pointer-events: auto !important;
-    }
-
-    .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background-color: #ffffff !important;
-      border: 2px solid #d1d5db !important;
-      border-radius: 8px !important;
-      min-height: 56px !important;
-      position: relative !important;
-      z-index: 10 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
-    }
-
-    .mat-mdc-input-element,
-    input[matInput],
-    textarea[matInput] {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background-color: transparent !important;
-      color: #1f2937 !important;
-      font-size: 16px !important;
-      padding: 16px 14px !important;
-      border: none !important;
-      outline: none !important;
-      box-sizing: border-box !important;
-      min-height: 24px !important;
-      position: relative !important;
-      z-index: 10 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
-    }
-
-    /* Fix number input styling */
-    input[type="number"][matInput] {
-      -webkit-appearance: none !important;
-      -moz-appearance: textfield !important;
-      appearance: none !important;
-    }
-
-    input[type="number"][matInput]::-webkit-outer-spin-button,
-    input[type="number"][matInput]::-webkit-inner-spin-button {
-      -webkit-appearance: none !important;
-      margin: 0 !important;
-    }
-    .mat-mdc-select {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 10 !important;
-      pointer-events: auto !important;
-      cursor: pointer !important;
-    }
-
-    .mat-mdc-select-trigger {
-      width: 100% !important;
-      display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background-color: transparent !important;
-      color: #1f2937 !important;
-      font-size: 16px !important;
-      padding: 16px 14px !important;
-      min-height: 24px !important;
-      position: relative !important;
-      z-index: 10 !important;
-      pointer-events: auto !important;
-      cursor: pointer !important;
-    }
-
-    /* Fix select arrow visibility */
-    .mat-mdc-select-arrow {
-      visibility: visible !important;
-      opacity: 1 !important;
-      color: #6b7280 !important;
-      pointer-events: none !important;
-    }
-
-    /* Ensure the entire form field is clickable */
-    .mat-mdc-form-field-flex {
-      width: 100% !important;
-      display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
-
-    /* Make the label clickable to focus input */
-    .mat-mdc-form-field-label {
-      color: #6b7280 !important;
-      font-size: 16px !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 10 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
-    }
-
-    /* Fix for select fields - make entire area clickable */
-    .mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
-      cursor: pointer !important;
-    }
-
-    .mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-form-field-flex {
-      cursor: pointer !important;
-    }
-    }
-
-    /* Remove any overlay or blocking elements */
-    .mat-mdc-form-field::before,
-    .mat-mdc-form-field::after {
-      display: none !important;
-    }
-
-
-    /* Focus states */
-    .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-      border-color: #9E7FFF !important;
-      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1) !important;
-    }
-
-    .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-      color: #9E7FFF !important;
-    }
-
-    /* Hover states */
-    .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-      border-color: #9ca3af !important;
-    }
-    /* Remove Material outline that might be blocking */
-    .mat-mdc-form-field-appearance-outline .mdc-notched-outline {
-      display: none !important;
-    }
-
-    .mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
-    .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
-    .mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing {
-      display: none !important;
-    }
-
-    /* Ensure form field infix is properly sized and clickable */
-    .mat-mdc-form-field-infix {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      position: relative !important;
-      z-index: 10 !important;
-      padding: 16px 14px !important;
-      border: none !important;
-      min-height: 24px !important;
-    }
-
-    /* Fix subscript wrapper */
-    .mat-mdc-form-field-subscript-wrapper {
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
-    /* Ensure step content is not blocking form fields */
-    .step-form {
-      position: relative !important;
-      z-index: 1 !important;
-    }
-
-    .form-section {
-      position: relative !important;
-      z-index: 1 !important;
-    }
-
-    /* CRITICAL: Override any global styles that might be blocking inputs */
-    .mat-mdc-form-field * {
-      pointer-events: auto !important;
-    }
-
-    /* Force input elements to be editable */
-    input[matInput]:disabled,
-    textarea[matInput]:disabled,
-    .mat-mdc-select:disabled {
-      pointer-events: none !important;
-    }
-
-    input[matInput]:not(:disabled),
-    textarea[matInput]:not(:disabled) {
-      pointer-events: auto !important;
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-    }
-
-    /* Ensure form controls are not readonly */
-    .mat-mdc-input-element:not([readonly]) {
-      background-color: white !important;
-      cursor: text !important;
-    }
-
-    /* Fix any potential overlay issues */
-    .modal-content * {
-      pointer-events: auto !important;
-    }
-
-    /* Ensure stepper content doesn't block inputs */
-    ::ng-deep .mat-step-content {
-      overflow: visible !important;
-      position: relative !important;
-      z-index: 1 !important;
-    }
-
-    ::ng-deep .mat-stepper-horizontal .mat-step-content {
-      overflow: visible !important;
-    }
-
-    /* Force Material form field wrapper to be interactive */
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      pointer-events: auto !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field-infix {
-      pointer-events: auto !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
-
-    /* Ensure input elements receive focus and input */
-    ::ng-deep input[matInput],
-    ::ng-deep textarea[matInput] {
-      pointer-events: auto !important;
-      user-select: text !important;
-      cursor: text !important;
-      position: relative !important;
-      z-index: 15 !important;
-    }
-
-    /* Fix select dropdown */
-    ::ng-deep .mat-mdc-select {
-      pointer-events: auto !important;
-      cursor: pointer !important;
-      position: relative !important;
-      z-index: 15 !important;
-    }
-
-    ::ng-deep .mat-mdc-select-trigger {
-      pointer-events: auto !important;
-      cursor: pointer !important;
     }
 
     @media (max-width: 768px) {
