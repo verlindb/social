@@ -339,7 +339,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
                 <button 
                   type="submit"
                   [disabled]="entityForm.invalid || isSubmitting"
-                  class="btn btn-primary submit-button">
+                  class="btn btn-primary submit-button"
+                  (click)="$event.preventDefault(); onSubmit()">
                   <span *ngIf="!isSubmitting" class="btn-icon">💾</span>
                   <span *ngIf="isSubmitting" class="spinner"></span>
                   {{ isSubmitting ? 'Adding...' : 'Add Legal Entity' }}
@@ -913,6 +914,11 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
 
   onSubmit(): void {
     if (this.entityForm.invalid || this.isSubmitting) {
+      return;
+    }
+
+    // Prevent multiple submissions
+    if (this.isSubmitting) {
       Object.keys(this.entityForm.controls).forEach(key => {
         this.entityForm.get(key)?.markAsTouched();
       });
@@ -949,6 +955,7 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
       )
       .subscribe({
         next: (entity) => {
+          this.resetForm();
           this.entityAdded.emit(entity);
         },
         error: (error) => {
