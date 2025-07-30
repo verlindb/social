@@ -3,12 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatStepperModule } from '@angular/material/stepper';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 
@@ -23,12 +19,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-    MatStepperModule
+    MatProgressSpinnerModule
   ],
   template: `
     <div 
@@ -50,293 +42,254 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
             mat-icon-button 
             (click)="onClose()"
             class="close-button"
-            aria-label="Close modal"
-            matTooltip="Close">
+            aria-label="Close modal">
             <mat-icon>close</mat-icon>
           </button>
         </header>
 
         <div class="modal-content">
-          <mat-stepper 
-            #stepper 
-            [linear]="true" 
-            orientation="horizontal"
-            class="entity-stepper"
-            [attr.aria-label]="'Add legal entity form steps'">
+          <form [formGroup]="entityForm" (ngSubmit)="onSubmit()" class="entity-form">
             
-            <!-- Step 1: Basic Information -->
-            <mat-step 
-              [stepControl]="basicInfoForm" 
-              label="Basic Information"
-              [attr.aria-label]="'Step 1: Basic Information'">
-              <form [formGroup]="basicInfoForm" class="step-form">
-                <div class="form-section">
-                  <h3 class="section-title">Entity Details</h3>
-                  
-                  <mat-form-field appearance="outline" class="form-field">
-                    <mat-label>Entity Name</mat-label>
-                    <input 
-                      matInput 
-                      formControlName="name" 
-                      placeholder="Enter legal entity name"
-                      aria-describedby="name-hint"
-                      class="form-input">
-                    <mat-hint id="name-hint">Full legal name of the entity</mat-hint>
-                    <mat-error *ngIf="basicInfoForm.get('name')?.hasError('required')">
-                      Entity name is required
-                    </mat-error>
-                    <mat-error *ngIf="basicInfoForm.get('name')?.hasError('minlength')">
-                      Name must be at least 2 characters long
-                    </mat-error>
-                  </mat-form-field>
+            <!-- Basic Information Section -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <mat-icon>business</mat-icon>
+                Basic Information
+              </h3>
+              
+              <div class="form-group">
+                <label for="entity-name" class="form-label">Entity Name *</label>
+                <input 
+                  id="entity-name"
+                  type="text" 
+                  formControlName="name" 
+                  class="form-input"
+                  placeholder="Enter legal entity name"
+                  autocomplete="off">
+                <div *ngIf="entityForm.get('name')?.invalid && entityForm.get('name')?.touched" class="error-message">
+                  <span *ngIf="entityForm.get('name')?.hasError('required')">Entity name is required</span>
+                  <span *ngIf="entityForm.get('name')?.hasError('minlength')">Name must be at least 2 characters long</span>
+                </div>
+              </div>
 
-                  <div class="form-row">
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Entity Type</mat-label>
-                      <mat-select 
-                        formControlName="type" 
-                        aria-label="Select entity type"
-                        class="form-select">
-                        <mat-option 
-                          *ngFor="let type of entityTypes" 
-                          [value]="type.value">
-                          {{ type.label }}
-                        </mat-option>
-                      </mat-select>
-                      <mat-error *ngIf="basicInfoForm.get('type')?.hasError('required')">
-                        Entity type is required
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Registration Number</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="registrationNumber" 
-                        placeholder="Enter registration number"
-                        class="form-input">
-                      <mat-error *ngIf="basicInfoForm.get('registrationNumber')?.hasError('required')">
-                        Registration number is required
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Employee Count</mat-label>
-                      <input 
-                        matInput 
-                        type="number" 
-                        formControlName="employeeCount" 
-                        min="0"
-                        placeholder="Number of employees"
-                        class="form-input">
-                      <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('required')">
-                        Employee count is required
-                      </mat-error>
-                      <mat-error *ngIf="basicInfoForm.get('employeeCount')?.hasError('min')">
-                        Employee count must be 0 or greater
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Status</mat-label>
-                      <mat-select 
-                        formControlName="status" 
-                        aria-label="Select entity status"
-                        class="form-select">
-                        <mat-option 
-                          *ngFor="let status of entityStatuses" 
-                          [value]="status.value">
-                          {{ status.label }}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="entity-type" class="form-label">Entity Type *</label>
+                  <select 
+                    id="entity-type"
+                    formControlName="type" 
+                    class="form-select">
+                    <option value="">Select entity type</option>
+                    <option *ngFor="let type of entityTypes" [value]="type.value">
+                      {{ type.label }}
+                    </option>
+                  </select>
+                  <div *ngIf="entityForm.get('type')?.invalid && entityForm.get('type')?.touched" class="error-message">
+                    Entity type is required
                   </div>
                 </div>
 
-                <div class="step-actions">
-                  <button 
-                    mat-raised-button 
-                    color="primary" 
-                    matStepperNext
-                    [disabled]="basicInfoForm.invalid"
-                    class="next-button">
-                    <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-                    Next: Address
-                  </button>
-                </div>
-              </form>
-            </mat-step>
-
-            <!-- Step 2: Address Information -->
-            <mat-step 
-              [stepControl]="addressForm" 
-              label="Address"
-              [attr.aria-label]="'Step 2: Address Information'">
-              <form [formGroup]="addressForm" class="step-form">
-                <div class="form-section">
-                  <h3 class="section-title">Entity Address</h3>
-                  
-                  <mat-form-field appearance="outline" class="form-field full-width">
-                    <mat-label>Street Address</mat-label>
-                    <input 
-                      matInput 
-                      formControlName="street" 
-                      placeholder="Enter street address"
-                      class="form-input">
-                    <mat-error *ngIf="addressForm.get('street')?.hasError('required')">
-                      Street address is required
-                    </mat-error>
-                  </mat-form-field>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>City</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="city" 
-                        placeholder="Enter city"
-                        class="form-input">
-                      <mat-error *ngIf="addressForm.get('city')?.hasError('required')">
-                        City is required
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Postal Code</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="postalCode" 
-                        placeholder="Enter postal code"
-                        class="form-input">
-                      <mat-error *ngIf="addressForm.get('postalCode')?.hasError('required')">
-                        Postal code is required
-                      </mat-error>
-                    </mat-form-field>
+                <div class="form-group">
+                  <label for="registration-number" class="form-label">Registration Number *</label>
+                  <input 
+                    id="registration-number"
+                    type="text" 
+                    formControlName="registrationNumber" 
+                    class="form-input"
+                    placeholder="Enter registration number"
+                    autocomplete="off">
+                  <div *ngIf="entityForm.get('registrationNumber')?.invalid && entityForm.get('registrationNumber')?.touched" class="error-message">
+                    Registration number is required
                   </div>
-
-                  <mat-form-field appearance="outline" class="form-field full-width">
-                    <mat-label>Country</mat-label>
-                    <input 
-                      matInput 
-                      formControlName="country" 
-                      placeholder="Enter country"
-                      class="form-input">
-                    <mat-error *ngIf="addressForm.get('country')?.hasError('required')">
-                      Country is required
-                    </mat-error>
-                  </mat-form-field>
                 </div>
+              </div>
 
-                <div class="step-actions">
-                  <button 
-                    mat-button 
-                    matStepperPrevious
-                    class="back-button">
-                    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-                    Back
-                  </button>
-                  <button 
-                    mat-raised-button 
-                    color="primary" 
-                    matStepperNext
-                    [disabled]="addressForm.invalid"
-                    class="next-button">
-                    <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-                    Next: Contact
-                  </button>
-                </div>
-              </form>
-            </mat-step>
-
-            <!-- Step 3: Contact Information -->
-            <mat-step 
-              [stepControl]="contactForm" 
-              label="Contact Person"
-              [attr.aria-label]="'Step 3: Contact Person Information'">
-              <form [formGroup]="contactForm" class="step-form">
-                <div class="form-section">
-                  <h3 class="section-title">Contact Person</h3>
-                  
-                  <div class="form-row">
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Full Name</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="name" 
-                        placeholder="Enter contact person name"
-                        class="form-input">
-                      <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
-                        Contact name is required
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="form-field">
-                      <mat-label>Position</mat-label>
-                      <input 
-                        matInput 
-                        formControlName="position" 
-                        placeholder="Enter position/title"
-                        class="form-input">
-                      <mat-error *ngIf="contactForm.get('position')?.hasError('required')">
-                        Position is required
-                      </mat-error>
-                    </mat-form-field>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="employee-count" class="form-label">Employee Count *</label>
+                  <input 
+                    id="employee-count"
+                    type="number" 
+                    formControlName="employeeCount" 
+                    class="form-input"
+                    placeholder="Number of employees"
+                    min="0"
+                    autocomplete="off">
+                  <div *ngIf="entityForm.get('employeeCount')?.invalid && entityForm.get('employeeCount')?.touched" class="error-message">
+                    <span *ngIf="entityForm.get('employeeCount')?.hasError('required')">Employee count is required</span>
+                    <span *ngIf="entityForm.get('employeeCount')?.hasError('min')">Employee count must be 0 or greater</span>
                   </div>
-
-                  <mat-form-field appearance="outline" class="form-field full-width">
-                    <mat-label>Email Address</mat-label>
-                    <input 
-                      matInput 
-                      type="email" 
-                      formControlName="email" 
-                      placeholder="Enter email address"
-                      class="form-input">
-                    <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
-                      Email is required
-                    </mat-error>
-                    <mat-error *ngIf="contactForm.get('email')?.hasError('email')">
-                      Please enter a valid email address
-                    </mat-error>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="form-field full-width">
-                    <mat-label>Phone Number</mat-label>
-                    <input 
-                      matInput 
-                      type="tel" 
-                      formControlName="phone" 
-                      placeholder="Enter phone number"
-                      class="form-input">
-                    <mat-error *ngIf="contactForm.get('phone')?.hasError('required')">
-                      Phone number is required
-                    </mat-error>
-                  </mat-form-field>
                 </div>
 
-                <div class="step-actions">
-                  <button 
-                    mat-button 
-                    matStepperPrevious
-                    class="back-button">
-                    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-                    Back
-                  </button>
-                  <button 
-                    mat-raised-button 
-                    color="primary" 
-                    (click)="onSubmit()"
-                    [disabled]="!isFormValid() || isSubmitting"
-                    class="submit-button">
-                    <mat-icon *ngIf="!isSubmitting" aria-hidden="true">save</mat-icon>
-                    <mat-spinner *ngIf="isSubmitting" diameter="20" aria-hidden="true"></mat-spinner>
-                    {{ isSubmitting ? 'Adding...' : 'Add Legal Entity' }}
-                  </button>
+                <div class="form-group">
+                  <label for="entity-status" class="form-label">Status</label>
+                  <select 
+                    id="entity-status"
+                    formControlName="status" 
+                    class="form-select">
+                    <option *ngFor="let status of entityStatuses" [value]="status.value">
+                      {{ status.label }}
+                    </option>
+                  </select>
                 </div>
-              </form>
-            </mat-step>
-          </mat-stepper>
+              </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <mat-icon>location_on</mat-icon>
+                Address Information
+              </h3>
+              
+              <div class="form-group">
+                <label for="street-address" class="form-label">Street Address *</label>
+                <input 
+                  id="street-address"
+                  type="text" 
+                  formControlName="street" 
+                  class="form-input"
+                  placeholder="Enter street address"
+                  autocomplete="off">
+                <div *ngIf="entityForm.get('street')?.invalid && entityForm.get('street')?.touched" class="error-message">
+                  Street address is required
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city" class="form-label">City *</label>
+                  <input 
+                    id="city"
+                    type="text" 
+                    formControlName="city" 
+                    class="form-input"
+                    placeholder="Enter city"
+                    autocomplete="off">
+                  <div *ngIf="entityForm.get('city')?.invalid && entityForm.get('city')?.touched" class="error-message">
+                    City is required
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="postal-code" class="form-label">Postal Code *</label>
+                  <input 
+                    id="postal-code"
+                    type="text" 
+                    formControlName="postalCode" 
+                    class="form-input"
+                    placeholder="Enter postal code"
+                    autocomplete="off">
+                  <div *ngIf="entityForm.get('postalCode')?.invalid && entityForm.get('postalCode')?.touched" class="error-message">
+                    Postal code is required
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="country" class="form-label">Country *</label>
+                <input 
+                  id="country"
+                  type="text" 
+                  formControlName="country" 
+                  class="form-input"
+                  placeholder="Enter country"
+                  autocomplete="off">
+                <div *ngIf="entityForm.get('country')?.invalid && entityForm.get('country')?.touched" class="error-message">
+                  Country is required
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <mat-icon>person</mat-icon>
+                Contact Person
+              </h3>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="contact-name" class="form-label">Full Name *</label>
+                  <input 
+                    id="contact-name"
+                    type="text" 
+                    formControlName="contactName" 
+                    class="form-input"
+                    placeholder="Enter contact person name"
+                    autocomplete="off">
+                  <div *ngIf="entityForm.get('contactName')?.invalid && entityForm.get('contactName')?.touched" class="error-message">
+                    Contact name is required
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="contact-position" class="form-label">Position *</label>
+                  <input 
+                    id="contact-position"
+                    type="text" 
+                    formControlName="contactPosition" 
+                    class="form-input"
+                    placeholder="Enter position/title"
+                    autocomplete="off">
+                  <div *ngIf="entityForm.get('contactPosition')?.invalid && entityForm.get('contactPosition')?.touched" class="error-message">
+                    Position is required
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="contact-email" class="form-label">Email Address *</label>
+                <input 
+                  id="contact-email"
+                  type="email" 
+                  formControlName="contactEmail" 
+                  class="form-input"
+                  placeholder="Enter email address"
+                  autocomplete="off">
+                <div *ngIf="entityForm.get('contactEmail')?.invalid && entityForm.get('contactEmail')?.touched" class="error-message">
+                  <span *ngIf="entityForm.get('contactEmail')?.hasError('required')">Email is required</span>
+                  <span *ngIf="entityForm.get('contactEmail')?.hasError('email')">Please enter a valid email address</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="contact-phone" class="form-label">Phone Number *</label>
+                <input 
+                  id="contact-phone"
+                  type="tel" 
+                  formControlName="contactPhone" 
+                  class="form-input"
+                  placeholder="Enter phone number"
+                  autocomplete="off">
+                <div *ngIf="entityForm.get('contactPhone')?.invalid && entityForm.get('contactPhone')?.touched" class="error-message">
+                  Phone number is required
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button 
+                type="button"
+                mat-button 
+                (click)="onClose()"
+                [disabled]="isSubmitting"
+                class="cancel-button">
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                mat-raised-button 
+                color="primary"
+                [disabled]="entityForm.invalid || isSubmitting"
+                class="submit-button">
+                <mat-icon *ngIf="!isSubmitting" aria-hidden="true">save</mat-icon>
+                <mat-spinner *ngIf="isSubmitting" diameter="20" aria-hidden="true"></mat-spinner>
+                {{ isSubmitting ? 'Adding...' : 'Add Legal Entity' }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -402,261 +355,114 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       color: white;
     }
 
-    .close-button:focus {
-      outline: 2px solid white;
-      outline-offset: 2px;
-    }
-
     .modal-content {
-      padding: 0;
       max-height: calc(90vh - 80px);
       overflow-y: auto;
+      padding: 0;
     }
 
-    .entity-stepper {
-      background: transparent;
-    }
-
-    .step-form {
+    .entity-form {
       padding: 32px;
     }
 
     .form-section {
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
 
     .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       font-size: 1.25rem;
       font-weight: 600;
       margin: 0 0 24px 0;
-      color: var(--text-color);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      color: #1f2937;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
     }
 
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 20px;
     }
 
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 14px;
     }
 
-    /* CRITICAL: Complete form field override */
-    .form-field {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 100 !important;
-      margin-bottom: 16px !important;
-      min-height: 80px !important;
-      background: white !important;
-      pointer-events: auto !important;
-    }
-
-    /* Override Material wrapper completely */
-    .form-field ::ng-deep .mat-mdc-text-field-wrapper {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background-color: white !important;
-      border: 2px solid #d1d5db !important;
-      border-radius: 8px !important;
-      min-height: 56px !important;
-      position: relative !important;
-      z-index: 100 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
-      box-shadow: none !important;
-    }
-
-    /* Force input visibility and functionality */
-    .form-input {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background-color: white !important;
-      color: #1f2937 !important;
-      font-size: 16px !important;
-      font-weight: 400 !important;
-      padding: 16px 14px !important;
-      border: none !important;
-      outline: none !important;
-      box-sizing: border-box !important;
-      min-height: 24px !important;
-      line-height: 1.5 !important;
-      font-family: 'Roboto', sans-serif !important;
-      position: relative !important;
-      z-index: 100 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
-      user-select: text !important;
-      -webkit-user-select: text !important;
-    }
-
-    /* Force select functionality */
+    .form-input,
     .form-select {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 100 !important;
-      pointer-events: auto !important;
-      cursor: pointer !important;
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background-color: white;
+      color: #1f2937;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
     }
 
-    .form-field ::ng-deep .mat-mdc-select-trigger {
-      width: 100% !important;
-      display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background-color: white !important;
-      color: #1f2937 !important;
-      font-size: 16px !important;
-      font-weight: 400 !important;
-      padding: 16px 14px !important;
-      min-height: 24px !important;
-      line-height: 1.5 !important;
-      font-family: 'Roboto', sans-serif !important;
-      position: relative !important;
-      z-index: 100 !important;
-      pointer-events: auto !important;
-      cursor: pointer !important;
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: #9E7FFF;
+      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
     }
 
-    /* Remove Material outline completely */
-    .form-field ::ng-deep .mdc-notched-outline {
-      display: none !important;
+    .form-input:hover,
+    .form-select:hover {
+      border-color: #9ca3af;
     }
 
-    .form-field ::ng-deep .mdc-notched-outline__leading,
-    .form-field ::ng-deep .mdc-notched-outline__notch,
-    .form-field ::ng-deep .mdc-notched-outline__trailing {
-      display: none !important;
+    .form-input::placeholder {
+      color: #9ca3af;
     }
 
-    /* Force label visibility */
-    .form-field ::ng-deep .mat-mdc-form-field-label {
-      color: #6b7280 !important;
-      font-size: 16px !important;
-      font-weight: 400 !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 100 !important;
-      pointer-events: auto !important;
-      cursor: text !important;
+    .form-select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      padding-right: 40px;
     }
 
-    /* Focus states */
-    .form-field:focus-within ::ng-deep .mat-mdc-text-field-wrapper {
-      border-color: #9E7FFF !important;
-      box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1) !important;
+    .error-message {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 500;
     }
 
-    .form-field:focus-within ::ng-deep .mat-mdc-form-field-label {
-      color: #9E7FFF !important;
-    }
-
-    /* Hover states */
-    .form-field:hover ::ng-deep .mat-mdc-text-field-wrapper {
-      border-color: #9ca3af !important;
-    }
-
-    /* Ensure form field infix is properly sized */
-    .form-field ::ng-deep .mat-mdc-form-field-infix {
-      width: 100% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      position: relative !important;
-      z-index: 100 !important;
-      padding: 16px 14px !important;
-      border: none !important;
-      min-height: 24px !important;
-    }
-
-    /* Fix subscript wrapper */
-    .form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 100 !important;
-    }
-
-    /* Override any global blocking styles */
-    .form-field * {
-      pointer-events: auto !important;
-    }
-
-    /* Ensure stepper doesn't block form fields */
-    ::ng-deep .mat-step-content {
-      overflow: visible !important;
-      position: relative !important;
-      z-index: 1 !important;
-    }
-
-    ::ng-deep .mat-stepper-horizontal .mat-step-content {
-      overflow: visible !important;
-    }
-
-    .step-actions {
+    .form-actions {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 24px;
-      border-top: 1px solid var(--border-color);
+      justify-content: flex-end;
       gap: 16px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 32px;
     }
 
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .next-button,
-    .submit-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
+    .cancel-button {
+      color: #6b7280;
+      font-weight: 500;
     }
 
     .submit-button {
-      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-      color: white;
-    }
-
-    /* Stepper customization */
-    ::ng-deep .mat-stepper-horizontal {
-      margin-top: 0;
-    }
-
-    ::ng-deep .mat-step-header {
-      padding: 16px 24px;
-    }
-
-    ::ng-deep .mat-step-header .mat-step-icon {
-      background-color: #38bdf8;
-    }
-
-    ::ng-deep .mat-step-header .mat-step-icon-selected {
-      background-color: #0ea5e9;
-    }
-
-    ::ng-deep .mat-step-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-weight: 500;
     }
 
@@ -666,40 +472,23 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
         max-height: 95vh;
       }
 
-      .modal-header {
-        padding: 16px;
-      }
-
-      .modal-title {
-        font-size: 1.25rem;
-      }
-
-      .step-form {
+      .entity-form {
         padding: 24px 16px;
       }
 
       .form-row {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 16px;
       }
 
-      .step-actions {
+      .form-actions {
         flex-direction: column;
         gap: 12px;
       }
 
-      .next-button,
       .submit-button {
-        margin-left: 0;
         width: 100%;
-      }
-
-      ::ng-deep .mat-stepper-horizontal {
-        flex-direction: column;
-      }
-
-      ::ng-deep .mat-horizontal-stepper-header-container {
-        display: none;
+        justify-content: center;
       }
     }
 
@@ -711,7 +500,7 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
         border-radius: 0;
       }
 
-      .step-form {
+      .entity-form {
         padding: 16px;
       }
     }
@@ -722,10 +511,7 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
   @Output() closeModal = new EventEmitter<void>();
   @Output() entityAdded = new EventEmitter<LegalEntity>();
 
-  basicInfoForm!: FormGroup;
-  addressForm!: FormGroup;
-  contactForm!: FormGroup;
-
+  entityForm!: FormGroup;
   isSubmitting = false;
 
   entityTypes = [
@@ -750,11 +536,10 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
     private fb: FormBuilder,
     private companyService: CompanyService
   ) {
-    this.initializeForms();
+    this.initializeForm();
   }
 
   ngOnInit(): void {
-    // Handle escape key
     document.addEventListener('keydown', this.handleEscapeKey.bind(this));
   }
 
@@ -766,75 +551,64 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && changes['isOpen'].currentValue) {
-      this.resetForms();
+      this.resetForm();
     }
   }
 
-  private initializeForms(): void {
-    this.basicInfoForm = this.fb.group({
+  private initializeForm(): void {
+    this.entityForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       type: ['', Validators.required],
       registrationNumber: ['', Validators.required],
       employeeCount: ['', [Validators.required, Validators.min(0)]],
-      status: [EntityStatus.ACTIVE, Validators.required]
-    });
-
-    this.addressForm = this.fb.group({
+      status: [EntityStatus.ACTIVE, Validators.required],
       street: ['', Validators.required],
       city: ['', Validators.required],
       postalCode: ['', Validators.required],
-      country: ['', Validators.required]
-    });
-
-    this.contactForm = this.fb.group({
-      name: ['', Validators.required],
-      position: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required]
+      country: ['', Validators.required],
+      contactName: ['', Validators.required],
+      contactPosition: ['', Validators.required],
+      contactEmail: ['', [Validators.required, Validators.email]],
+      contactPhone: ['', Validators.required]
     });
   }
 
-  private resetForms(): void {
-    this.basicInfoForm.reset({
+  private resetForm(): void {
+    this.entityForm.reset({
       status: EntityStatus.ACTIVE
     });
-    this.addressForm.reset();
-    this.contactForm.reset();
     this.isSubmitting = false;
   }
 
-  isFormValid(): boolean {
-    return this.basicInfoForm.valid && this.addressForm.valid && this.contactForm.valid;
-  }
-
   onSubmit(): void {
-    if (!this.isFormValid() || this.isSubmitting) {
+    if (this.entityForm.invalid || this.isSubmitting) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.entityForm.controls).forEach(key => {
+        this.entityForm.get(key)?.markAsTouched();
+      });
       return;
     }
 
     this.isSubmitting = true;
-
-    const basicInfo = this.basicInfoForm.value;
-    const address = this.addressForm.value;
-    const contact = this.contactForm.value;
+    const formValue = this.entityForm.value;
 
     const newEntity: Omit<LegalEntity, 'id' | 'createdAt' | 'updatedAt'> = {
-      name: basicInfo.name,
-      type: basicInfo.type,
-      registrationNumber: basicInfo.registrationNumber,
-      employeeCount: basicInfo.employeeCount,
-      status: basicInfo.status,
+      name: formValue.name,
+      type: formValue.type,
+      registrationNumber: formValue.registrationNumber,
+      employeeCount: formValue.employeeCount,
+      status: formValue.status,
       address: {
-        street: address.street,
-        city: address.city,
-        postalCode: address.postalCode,
-        country: address.country
+        street: formValue.street,
+        city: formValue.city,
+        postalCode: formValue.postalCode,
+        country: formValue.country
       },
       contactPerson: {
-        name: contact.name,
-        position: contact.position,
-        email: contact.email,
-        phone: contact.phone
+        name: formValue.contactName,
+        position: formValue.contactPosition,
+        email: formValue.contactEmail,
+        phone: formValue.contactPhone
       }
     };
 
@@ -849,7 +623,6 @@ export class AddLegalEntityModalComponent implements OnInit, OnDestroy, OnChange
         },
         error: (error) => {
           console.error('Error adding legal entity:', error);
-          // Error handling would be done by parent component
         }
       });
   }
