@@ -505,6 +505,18 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
 
     .step-content {
       min-height: 400px;
+      position: relative;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    .step-content[style*="none"] {
+      display: none !important;
+      visibility: hidden !important;
+      position: absolute !important;
+      top: -9999px !important;
+      left: -9999px !important;
+      pointer-events: none !important;
     }
 
     .form-section {
@@ -525,6 +537,9 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
 
     .form-group {
       margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     .form-row {
@@ -555,12 +570,21 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       transition: all 0.2s ease;
       box-sizing: border-box;
       outline: none;
+      position: relative;
+      z-index: 3;
+      pointer-events: auto;
+      cursor: text;
+    }
+
+    .form-select {
+      cursor: pointer;
     }
 
     .form-input:focus,
     .form-select:focus {
       border-color: #9E7FFF;
       box-shadow: 0 0 0 3px rgba(158, 127, 255, 0.1);
+      z-index: 4;
     }
 
     .form-input:hover,
@@ -573,12 +597,15 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
     }
 
     .form-select {
-      cursor: pointer;
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
       background-position: right 12px center;
       background-repeat: no-repeat;
       background-size: 16px;
       padding-right: 40px;
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
 
     .error-message {
@@ -586,6 +613,9 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       font-size: 12px;
       margin-top: 4px;
       font-weight: 500;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
     }
 
     .step-actions {
@@ -596,6 +626,9 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       border-top: 1px solid #e5e7eb;
       margin-top: 32px;
       gap: 16px;
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     .back-button {
@@ -603,6 +636,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       align-items: center;
       gap: 8px;
       color: #6b7280;
+      pointer-events: auto;
+      z-index: 3;
     }
 
     .next-button,
@@ -611,6 +646,8 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       align-items: center;
       gap: 8px;
       font-weight: 500;
+      pointer-events: auto;
+      z-index: 3;
     }
 
     .submit-button {
@@ -618,6 +655,46 @@ import { LegalEntity, LegalEntityType, EntityStatus } from '../../models/legal-e
       color: white;
     }
 
+    /* Ensure no element interference */
+    .stepper-header {
+      position: relative;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    .stepper-header * {
+      pointer-events: auto;
+    }
+
+    /* Prevent any hidden elements from interfering */
+    .entity-form > div:not(.step-content[style*="block"]) {
+      pointer-events: none !important;
+    }
+
+    /* Force proper layering */
+    .modal-container * {
+      position: relative;
+    }
+
+    /* Ensure form elements are always on top */
+    input, select, textarea, button {
+      position: relative !important;
+      z-index: 10 !important;
+      pointer-events: auto !important;
+    }
+
+    /* Fix any potential overlay issues */
+    .form-input:hover,
+    .form-select:hover {
+      z-index: 5;
+    }
+
+    /* Ensure labels don't interfere */
+    .form-label {
+      pointer-events: none;
+      position: relative;
+      z-index: 1;
+    }
     @media (max-width: 768px) {
       .modal-container {
         width: 95vw;
