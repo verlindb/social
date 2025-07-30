@@ -823,6 +823,22 @@ export class CompanyStructureComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadEntities(): void {
+    this.isLoadingEntities = true;
+    this.companyService.getLegalEntities()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (entities) => {
+          this.legalEntities = entities;
+          this.isLoadingEntities = false;
+        },
+        error: (error) => {
+          console.error('Error loading entities:', error);
+          this.isLoadingEntities = false;
+        }
+      });
+  }
+
   private populateCompanyForm(companyInfo: CompanyInfo): void {
     this.companyForm.patchValue({
       name: companyInfo.name,
@@ -886,9 +902,10 @@ export class CompanyStructureComponent implements OnInit, OnDestroy {
   }
 
   onEntityAdded(entity: LegalEntity): void {
-    this.legalEntities = [...this.legalEntities, entity];
     this.closeAddEntityModal();
     this.showSuccessMessage(`Legal entity "${entity.name}" added successfully`);
+    // Reload the entities from the service to get the updated list
+    this.loadEntities();
   }
 
   onEditEntity(entity: LegalEntity): void {
